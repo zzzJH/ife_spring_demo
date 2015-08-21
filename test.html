@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title></title>
+	<link rel="stylesheet" href="">
+</head>
+<body>
+	<div id="div" style="width:200px;height:80px;background-color:#ccc;color:#000;"></div>
+	<button id="btn">按钮</button>
+	<script>
+	var userData = {
+		defaultCategory:{
+			name:"默认分类",
+			subCategories:[
+				{
+					name:"task1",
+					tasks:[
+						{
+							name:"to-do-1",
+							createtime:"2015-08-21",
+							updatetime:"2015-08-21",
+							contents:"完成编码",
+							isFinished:false
+						},
+						{
+							name:"to-do-2",
+							createtime:"2015-08-21",
+							updatetime:"2015-08-21",
+							contents:"完成编码",
+							isFinished:false
+						}
+					]
+				}	
+			]
+		},
+		categories:[
+			{
+				name:"百度IFe",
+				subCategories:[
+					{
+						name:"task2222",
+						task:[
+							{
+								name:"to-do-2222",
+								createtime:"2015-08-22",
+								updatetime:"2015-08-22",
+								contents:"百度IFe文本域",
+								isFinished:false
+							},
+							{
+								name:"to-do-4444",
+								createtime:"2015-08-22",
+								updatetime:"2015-08-22",
+								contents:"百度IFe文本域",
+								isFinished:false
+							}
+						]
+					}
+				]
+			}
+		]
+	};
+	if (window.localStorage) {
+		localStorage.setItem("userData",JSON.stringify(userData));
+	}
+	
+	var userData  = JSON.parse(localStorage.getItem("userData")).categories[0].subCategories[0].name;
+	console.log(userData);
+
+	</script>
+</body>
+</html>

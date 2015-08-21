@@ -1,0 +1,104 @@
+var userData = {
+		defaultCategory: {
+			"name": "默认分类",
+			"tasks": [
+					{ 
+						"name": "to-do 1",
+						"create_time": "2015-04-30",
+						"content": "完成task3编码",
+						"isFinished": true 
+					}
+				]
+		},
+		categories: [
+			{  
+				"name": "baiduIFE",
+				"subCategories": [
+					{
+						"name": "subtasks1",
+						"subCategories": [],
+						"tasks": [
+							{ 
+								"name": "to-do 1",
+								"create_time": "2015-04-10",
+								"update_time": "2015-04-10",
+								"content": "完成task3编码",
+								"isFinished": false 
+							},
+							{ 
+								"name": "to-do 2",
+								"create_time": "2015-04-11",
+								"update_time": "2015-04-11",
+								"content": "完成task3编码",
+								"isFinished": false 
+							},
+						]
+					}
+				],
+				"tasks": [
+					{ 
+						"name": "to-do 1",
+						"create_time": "2015-04-28",
+						"update_time": "2015-04-28",
+						"content": "完成task3编码",
+						"isFinished": false 
+					}
+				]
+			}
+		]
+	};
+
+/////////////////////////////////////////////////////	
+
+var userData = {
+	defaultCategory:{
+		name:"默认分类",
+		subCategories:[
+			{
+				name:"task1",
+				tasks:[
+					{
+						name:"to-do-1",
+						createtime:"2015-08-21",
+						updatetime:"2015-08-21",
+						contents:"完成编码",
+						isFinished:false
+					},
+					{
+						name:"to-do-2",
+						createtime:"2015-08-21",
+						updatetime:"2015-08-21",
+						contents:"完成编码",
+						isFinished:false
+					}
+				]
+			}	
+		]
+	},
+	categories:[
+		{
+			name:"百度IFe",
+			subCategories:[
+				{
+					name:"task2222",
+					task:[
+						{
+							name:"to-do-2222",
+							createtime:"2015-08-22",
+							updatetime:"2015-08-22",
+							contents:"百度IFe文本域",
+							isFinished:false
+						},
+						{
+							name:"to-do-4444",
+							createtime:"2015-08-22",
+							updatetime:"2015-08-22",
+							contents:"百度IFe文本域",
+							isFinished:false
+						}
+					]
+				}
+			]
+		}
+	]
+};

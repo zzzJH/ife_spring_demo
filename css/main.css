@@ -1,0 +1,198 @@
+span {
+  padding-left: .5em;
+}
+.nav_p {
+  text-indent: 1rem;
+  font-size: 1.6rem;
+  line-height: 3.5rem;
+}
+html {
+  font-size: 62.5%;
+  font-family: "微软雅黑", Sans-serif;
+  color: #313131;
+}
+a {
+  text-decoration: none;
+  color: blue;
+  font-size: 1.2rem;
+}
+.active {
+  border: 1px solid blue;
+}
+header {
+  width: 100%;
+  height: 6rem;
+  font-size: 2.4rem;
+  line-height: 6rem;
+  color: #9D9D9D;
+  background-color: #DDDDDD;
+  text-indent: 4rem;
+  border-bottom: 2px solid #cecece;
+}
+.nav {
+  width: 20%;
+  float: left;
+  background-color: #F2F2F2;
+  border-right: 2px solid #cecece;
+  box-sizing: border-box;
+}
+.nav .alltask {
+  text-indent: 1rem;
+  font-size: 1.6rem;
+  line-height: 3.5rem;
+  padding-top: 1rem;
+}
+.nav .category {
+  height: 500px;
+  border-bottom: 2px solid #cecece;
+}
+.nav .category > p {
+  text-indent: 1rem;
+  font-size: 1.6rem;
+  line-height: 3.5rem;
+}
+.category-list .category-p {
+  text-indent: 2rem;
+  font-size: 1.6rem;
+  line-height: 2.5rem;
+  cursor: pointer;
+}
+.category-list .category-p a {
+  float: right;
+  padding-right: .5rem;
+  display: none;
+}
+.category-list .category-p:hover a {
+  display: block;
+}
+.category-list ul li {
+  text-indent: 2.5rem;
+  font-size: 1.4rem;
+  line-height: 2rem;
+  cursor: pointer;
+  margin-top: 3px;
+}
+.category-list ul li a {
+  float: right;
+  padding-right: 1rem;
+  display: none;
+}
+.category-list ul li:hover a {
+  display: block;
+}
+.new {
+  text-align: center;
+  font-size: 1.6rem;
+  background-color: #EEEEEE;
+  border-bottom: 2px solid #cecece;
+}
+.new p {
+  line-height: 4rem;
+  cursor: pointer;
+}
+/*---------------------------------*/
+.subnav {
+  width: 20%;
+  float: left;
+  border-right: 2px solid #cecece;
+  box-sizing: border-box;
+}
+.subnav .top {
+  height: 4rem;
+  background-color: #EEEEEE;
+  border-bottom: 2px solid #cecece;
+  text-align: center;
+  line-height: 4rem;
+}
+.subnav .top button {
+  border: none;
+  font-size: 1.3rem;
+  padding: .5rem;
+  outline: none;
+  background-color: #EEEEEE;
+  cursor: pointer;
+}
+.subnav .top .btn-active {
+  border: 1px solid #CFCFCF;
+  background-color: #ffffff;
+}
+.task {
+  height: 504px;
+  border-bottom: 2px solid #cecece;
+}
+.task-item dl {
+  font-size: 1.4rem;
+  line-height: 2rem;
+}
+.task-item dl dt {
+  background-color: #EAEAE2;
+  text-indent: 2rem;
+}
+.task-item dl dd {
+  cursor: pointer;
+  background-color: #DEDBD0;
+  text-indent: 4rem;
+}
+.task-item dl dd a {
+  display: none;
+  float: right;
+  padding-right: 1rem;
+}
+.task-item dl dd:hover a {
+  display: block;
+}
+/*-----------------------------------------*/
+.main {
+  width: 60%;
+  float: right;
+  box-sizing: border-box;
+}
+.main .title {
+  background-color: #F2F2F2;
+  border-bottom: 2px solid #cecece;
+  height: 5rem;
+}
+.main .title input {
+  border: none;
+  text-indent: 2rem;
+  font-size: 1.8rem;
+  margin-top: 2rem;
+  background-color: #D8D2D2;
+}
+.main .title input:focus {
+  text-indent: 0;
+}
+.main .title button {
+  float: right;
+  border: none;
+  padding: 1rem;
+  margin-right: 2rem;
+  margin-top: 1rem;
+  outline: none;
+  cursor: pointer;
+}
+.main .date {
+  background-color: #FAFAEE;
+  border-bottom: 2px solid #cecece;
+  height: 5rem;
+  font-size: 1.6rem;
+  padding-left: 1rem;
+  padding-bottom: 1rem;
+}
+.main .date label input {
+  border: none;
+  text-indent: 2rem;
+  font-size: 1.6rem;
+  margin-top: 2.3rem;
+  background-color: #D8D2D2;
+}
+.main .date label input:focus {
+  text-indent: 0;
+}
+.main .date span {
+  display: none;
+}
+.main .content textarea {
+  width: 66.7rem;
+  height: 38.7rem;
+}

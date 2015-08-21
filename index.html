@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>IFE Manage</title>
+	<link rel="stylesheet" href="css/reset.css">
+	<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+	<header>GTD Tools</header>
+	<div class="nav" id="nav">
+		<p class="alltask">所有任务<span id="allTask">(15)</span></p>
+		<div class="category" id="category">
+			<p>分類列表</p>
+			<!-- <div class="category-list" id="category-default">	
+				<p class="category-p active">默认分类<span>(10)</span></p>
+				<ul>
+					<li>task1<span>(5)</span><a href="#">删除</a></li>
+				</ul>
+			</div>
+			<div class="category-list" id="category-item-1">	
+				<p class="category-p">百度IFE項目<span>(10)</span><a href="#">删除</a></p>
+				<ul>
+					<li>task1<span>(5)</span><a href="#">删除</a></li>
+				</ul>
+			</div> -->
+		</div>
+		<div class="new" id="newCategory">
+			<p>新增分類</p>
+		</div>
+	</div>
+	<div class="subnav" id="subnav">
+		<div class="top">
+			<button class="btn-active">所有</button>
+			<button>未完成</button>
+			<button>以完成</button>
+		</div>
+		<div class="task" id="task">
+			<!-- <div class="task-item" id="task-item-1">
+				<dl>
+					<dt>2015-08-19</dt>
+					<dd>to-do-1<a href="#">删除</a></dd>
+					<dd>to-do-2<a href="#">删除</a></dd>
+				</dl>
+			</div> -->
+		</div>
+		<div class="new" id="newTask">
+			<p>新增任务</p>
+		</div>
+	</div>
+	<div class="main">
+		<div class="title" id="title">
+			<input type="text" disabled="true" id="subtitle">
+			<button id="save">保存</button>
+			<button id="edit">编辑</button>
+		</div>
+		<div class="date" id="date">
+			<label for="taskname">任务日期:<input type="text" name="taskname" id="taskname" disabled="true"></label>
+			<span id="dateFormate">日期格式为YYYY-MM-DD</span>
+		</div>
+		<div class="content" id="content">
+			<textarea name="" id="con-text" disabled="true"></textarea>
+		</div>
+	</div>
+	<script src="js/support.js"></script>
+	<script src="js/main.js"></script>
+</body>
+</html>
+
