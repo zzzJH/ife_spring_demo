@@ -35,8 +35,13 @@ $.delegate($('category'), 'li', 'click', function () {
 		removeAllClass('li', 'active');
 		addClass(that, 'active');
 		currentCategory_item = that;
+		if ($.cookieUtil.get('flagShowTask')) {
+			return;
+		}
 		$.data.showTask();
+		
 	}
+	$.cookieUtil.set('flagShowTask',true);
 });
 //subnav——————
 $.delegate($('task'), 'dd', 'click', function () {
@@ -100,3 +105,6 @@ $.addEvent($('save'), 'click', function () {
 });
 
 $.data.loadDefaultData();
+// $.cookieUtil.set("flag",true);
+// console.log($.cookieUtil.get("flag"));
+// console.log(document.cookie);

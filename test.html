@@ -67,6 +67,10 @@
 			console.log(userData[key][key2]);
 		}
 	}
+	localStorage.setItem('userData',JSON.stringify(userData));
+	var a = JSON.parse(localStorage.getItem('userData'));
+	a.defaultCategory.name = 'z';
+	localStorage.setItem('userData',JSON.stringify(a));
 
 	</script>
 </body>
