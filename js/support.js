@@ -248,19 +248,20 @@ $.newContent = {
 			dl.appendChild(dd);
 		} else {
 			var value = $.newContent.getTaskItem();
-			var div = createElement('div');
-			var dl = createElement('dl');
-			var dt = createElement('dt');
-			var dd = createElement('dd');
-			var time = $.date.dateFormat();
-			dt.innerHTML = $.date.dateYMD();
-			dd.innerHTML = value + aStr;
-			dl.appendChild(dt);
-			dl.appendChild(dd);
-			div.appendChild(dl);
-			addClass(div,'task-item');
-			div.id = "task-item-" + time;
-			$('task').appendChild(div);
+			createTask(value);
+			// var div = createElement('div');
+			// var dl = createElement('dl');
+			// var dt = createElement('dt');
+			// var dd = createElement('dd');
+			// var time = $.date.dateFormat();
+			// dt.innerHTML = $.date.dateYMD();
+			// dd.innerHTML = value + aStr;
+			// dl.appendChild(dt);
+			// dl.appendChild(dd);
+			// div.appendChild(dl);
+			// addClass(div,'task-item');
+			// div.id = "task-item-" + time;
+			// $('task').appendChild(div);
 		}
 	},
 	getCategoryName: function () {
@@ -276,17 +277,41 @@ $.newContent = {
 
 //change input、textarea  disabled 
 function edit () {
-	$('dateFormate').style.display = "inline-block";
-	$('subtitle').disabled = false;
-	$('taskname').disabled = false;
-	$('con-text').disabled = false;
+	if ($('subtitle').value == '') {
+		return;
+	}
+	//$('dateFormate').style.display = "inline-block";
+	// $('subtitle').disabled = false;
+	// $('taskname').disabled = false;
+	// $('con-text').disabled = false;
+	 changeDisabled();
 }
 
 function save () {
-	$('dateFormate').style.display = "none";
-	$('subtitle').disabled = true;
-	$('taskname').disabled = true;
-	$('con-text').disabled = true;
+	if ($('subtitle').value == '') {
+		return;
+	}
+	//$('dateFormate').style.display = "none";
+	// $('subtitle').disabled = true;
+	// $('taskname').disabled = true;
+	// $('con-text').disabled = true;
+	changeDisabled();
+	$.data.saveData();
+}
+
+//packge input/textarea disabled attr
+function changeDisabled () {
+	if ($('subtitle').disabled) {
+		$('dateFormate').style.display = "inline-block";
+		$('subtitle').disabled = false;
+		$('taskname').disabled = false;
+		$('con-text').disabled = false;
+	} else {
+		$('dateFormate').style.display = "none";
+		$('subtitle').disabled = true;
+		$('taskname').disabled = true;
+		$('con-text').disabled = true;
+	}
 }
 
 //save localStorage————————————————————————————
@@ -343,7 +368,7 @@ var userData = {
 		}
 	]
 };*/
-
+//userData object 
 var userData = {
 	defaultCategory: {
 		name: "默认分类",
@@ -367,13 +392,18 @@ var userData = {
 	]
 };
 
+
+// userData operation
 $.data = {
+	// save data use storage JSON format
 	setDefaultStorage: function () {
 		localStorage.setItem("userData",JSON.stringify(userData));
 	},
+	// return data userData Object
 	getDefaultStorage: function () {
 		return JSON.parse(localStorage.getItem('userData'));
 	},
+	// init page   load data
 	loadDefaultData: function () {
 		$.data.setDefaultStorage();
 		var userData = $.data.getDefaultStorage();
@@ -423,9 +453,86 @@ $.data = {
 		// $('taskname').value = $.date.dateYMD();
 		// $('con-text').value = taskContent;
 	},
+	// click item  show tasks
 	showTask: function () {
+		itemLength = getItemPos(currentCategory_item);
+		var itemTasks = userData.defaultCategory.subCategories[itemLength].tasks;
+		traverseArray(itemTasks);
+	},
+	// click tasks show content
+	showContent: function () {
+		taskLength = getContentPos(currentTaskName);
+		var tasks = userData.defaultCategory.subCategories[itemLength].tasks[taskLength];
+		$('subtitle').value = tasks.name;
+		$('taskname').value = showYYYYMMDD(tasks.createtime);
+		$('con-text').value = tasks.contents;
+	},
+	saveData: function () {
+		if (currentCategory == defaultCategory) {
+			var userdata = userData.defaultCategory.subCategories[itemLength].tasks[taskLength];
+
+
+		}
 
 	}
-
 };  
 
+// 
+function createTask (taskname) {
+	var div = createElement('div');
+	var dl = createElement('dl');
+	var dt = createElement('dt');
+	var dd = createElement('dd');
+	var time = $.date.dateFormat();
+	dt.innerHTML = $.date.dateYMD();
+	dd.innerHTML = taskname + aStr;
+	dd.id = $.date.dateFormat();
+	dl.appendChild(dt);
+	dl.appendChild(dd);
+	div.appendChild(dl);
+	addClass(div,'task-item');
+	div.id = "task-item-" + time;
+	$('task').appendChild(div);
+}
+
+
+function getItemPos (element) {
+	if (element.parentNode.parentNode == defaultCategory) {
+		var lis = $('category-default').getElementsByTagName('li');
+		for (var i = 0; i < lis.length; i++) {
+				if (element.id == lis[i].id) {
+					return i;
+				}
+		}
+	}
+	return false;
+}
+
+function getContentPos (element) {
+	var elementPar = element.parentNode.parentNode;
+	var dds = $(elementPar.id).getElementsByTagName('dd');
+	for (var i = 0; i < dds.length; i++) {
+			if (element.id == currentTaskName.id ) {
+				return i;
+			}
+	};
+}
+
+function traverseArray (array) {
+	var length = array.length;
+	for (var i = 0; i < length; i++) {
+		createTask(array[i].name);
+	};
+}
+
+function showYYYYMMDD (str) {
+	var str = str.substring(0,7);
+	var date = str.substring(5);
+	if (str.substring(4,5) != '0') {
+		var month = '0' + str.substring(4,5)
+	} else {
+		var month = str.substring(4,6);
+	}
+	var year = str.substring(0,4);
+	return year + '-' + month + '-' + date;
+}

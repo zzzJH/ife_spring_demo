@@ -1,8 +1,10 @@
 //create category、category_item 
-var defaultCategory,
+var defaultCategory,  
 	currentCategory,
 	currentCategory_item,
-	currentTaskName;
+	currentTaskName,
+	itemLength,
+	taskLength;
 //currentCategory = defaultCategory;
 
 //add className——————————————————————————————
@@ -16,15 +18,11 @@ $.delegate($('category'), 'p', 'click', function (event) {
 	if (hasClass(that,'active')) {
 		removeClass(that,'active');
 		currentCategory = '';
-		console.log(currentCategory);
-		console.log(currentCategory_item);
 	} else {
 		removeAllClass('p', 'active');
 		if (that.className == '') {return false}
 		addClass(that, 'active');
 		currentCategory = that.parentNode;
-		console.log(currentCategory);
-		console.log(currentCategory_item);
 	}
 });
 ////item
@@ -33,14 +31,11 @@ $.delegate($('category'), 'li', 'click', function () {
 	if (hasClass(that,'active')) {
 		removeClass(that,'active');
 		currentCategory_item = '';
-		console.log(currentCategory);
-		console.log(currentCategory_item);
 	} else {
 		removeAllClass('li', 'active');
 		addClass(that, 'active');
 		currentCategory_item = that;
-		console.log(currentCategory);
-		console.log(currentCategory_item);
+		$.data.showTask();
 	}
 });
 //subnav——————
@@ -48,9 +43,12 @@ $.delegate($('task'), 'dd', 'click', function () {
 	var that = this;
 	if (hasClass(that,'active')) {
 		removeClass(that,'active');
+		currentTaskName = '';
 	} else {
 		removeAllClass('dd', 'active');
 		addClass(that, 'active');
+		currentTaskName = that;
+		$.data.showContent();
 	}
 });
 
@@ -93,12 +91,6 @@ $.addEvent($('newTask'),'click',function () {
 
 
 //dbclick modify
-var subtitle = $('subtitle');
-$.addEvent($('save'), 'dblclick', function () {
-	alert(11);
-	subtitle.readonly = false;
-});
-
 $.addEvent($('edit'), 'click', function () {
 	edit();
 });

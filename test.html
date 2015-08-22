@@ -62,12 +62,11 @@
 			}
 		]
 	};
-	if (window.localStorage) {
-		localStorage.setItem("userData",JSON.stringify(userData));
+	for (var key in userData) { 
+		for (var key2 in userData[key]) {
+			console.log(userData[key][key2]);
+		}
 	}
-	
-	var userData  = JSON.parse(localStorage.getItem("userData")).categories[0].subCategories[0].name;
-	console.log(userData);
 
 	</script>
 </body>
