@@ -310,6 +310,7 @@ $.newContent = {
 			console.log(22222);
 			var value = $.newContent.getTaskItem();
 			createTask(value);
+            $('taskname').value = $.date.dateYMD();
 			// var div = createElement('div');
 			// var dl = createElement('dl');
 			// var dt = createElement('dt');
@@ -346,23 +347,23 @@ function saveDefaultTask (elementItem, elementTask, name, time, content) {
 	itemTasks[taskLength] = {};
 	itemTasks[taskLength].name = name;
 	itemTasks[taskLength].createtime = $.date.dateFormat();
-	itemTasks[taskLength].updatetime = itemTasks[taskLength].createtime;
+	itemTasks[taskLength].updatetime = showYYYYMMDD(itemTasks[taskLength].createtime,false);
 	if (time) {
 		console.log(time);
-		itemTasks[taskLength].updatetime = time;
+		itemTasks[taskLength].updatetime = changeYYYYMMDD();
 	}
 	itemTasks[taskLength].contents = '';
 	if (content) {
 		itemTasks[taskLength].contents = content;
 	}
 	itemTasks[taskLength].isFinished = false;
-	$('taskname').value = $.date.dateYMD();
+	//$('taskname').value = $.date.dateYMD();
 	$.data.setDefaultStorage(userData);	
 }
 
 // updata contnes to localStorage 
 function updateContents () {
-	saveDefaultTask(currentCategory_item, currentTaskName, idValue('subtitle'), $.date.dateFormat(), idValue('con-text'));
+	saveDefaultTask(currentCategory_item, currentTaskName, idValue('subtitle'), idValue('taskname'), idValue('con-text'));
 }
 
 // delete data 
@@ -423,7 +424,7 @@ function save() {
 	// $('con-text').disabled = true;
 	Disabled();
 	updateContents();
-	//$.data.saveData();
+	$.data.saveData();
 }
 
 //packge input/textarea disabled attr
@@ -528,7 +529,7 @@ var userDATA = {
 			tasks: [{
 				name: "默认todo",
 				createtime: $.date.dateFormat(),
-				updatetime: $.date.dateFormat(),
+				updatetime: showYYYYMMDD($.date.dateFormat(),false),
 				contents: "以完成默认加载",
 				isFinished: true
 			}]
@@ -622,9 +623,9 @@ $.data = {
 		var tasks = userData.defaultCategory.subCategories[itemLength].tasks[taskLength];
 		$('subtitle').value = tasks.name;
 		if (tasks.updatetime) {
-			$('taskname').value = showYYYYMMDD(tasks.updatetime);
+			$('taskname').value = showYYYYMMDD(tasks.updatetime,true);
 		} else {
-			$('taskname').value = showYYYYMMDD(tasks.createtime);
+			$('taskname').value = showYYYYMMDD(tasks.createtime,true);
 		}
 		$('con-text').value = tasks.contents;
 	},
@@ -633,7 +634,8 @@ $.data = {
 			var user_Data = $.data.getDefaultStorage()
 			var user__Data = user_Data.defaultCategory.subCategories[itemLength].tasks[taskLength];
 			user__Data.name = $('subtitle').value;
-			user__Data.updatetime = $.date.dateFormat();
+			user__Data.updatetime = changeYYYYMMDD();
+            console.log(user__Data.updatetime);
 			changeDt(currentTaskName).innerHTML = $('taskname').value;
 			user__Data.contents = $('con-text').value;
 			user__Data.isFinished = true;
@@ -642,6 +644,14 @@ $.data = {
 
 	}
 };
+
+// change YYYY-MM-DD to YYYYMMDD
+function changeYYYYMMDD () {
+    var value = $('taskname').value;
+    var arr = value.split('-');
+    var arrStr = arr.join('');
+    return arrStr;
+}
 
 //packge task method 
 function createTask(taskname) {
@@ -702,17 +712,24 @@ function traverseArray(array) {
 	};
 }
 
-// form YYYYMMDDHHMMSS to  YYYYMMDD
-function showYYYYMMDD(str) {
-	var str = str.substring(0, 7);
-	var date = str.substring(5);
+// form YYYYMMDDHHMMSS to  YYYY-MM-DD
+function showYYYYMMDD(str,isGan) {
 	if (str.substring(4, 5) != '0') {
-		var month = '0' + str.substring(4, 5)
+        var str = str.substring(0, 7);
+		var month = '0' + str.substring(4, 5);
+        var date = str.substring(5);
 	} else {
+        var str = str.substring(0, 8);
 		var month = str.substring(4, 6);
+        var date = str.substring(6);
 	}
 	var year = str.substring(0, 4);
-	return year + '-' + month + '-' + date;
+    if (isGan) {
+        return year + '-' + month + '-' + date;
+    } else {
+        return year + month + date;
+    }
+
 }
 
 // accord currentTask  chagne dt.value

@@ -73,12 +73,13 @@ header {
   margin-top: 3px;
 }
 .category-list ul li a {
+  text-indent: 0;
   float: right;
-  padding-right: 1rem;
+  margin-right: 1rem;
   display: none;
 }
 .category-list ul li:hover a {
-  display: block;
+  display: inline-block;
 }
 .new {
   text-align: center;
@@ -135,11 +136,12 @@ header {
 }
 .task-item dl dd a {
   display: none;
+  text-indent: 0;
   float: right;
-  padding-right: 1rem;
+  margin-right: 1rem;
 }
 .task-item dl dd:hover a {
-  display: block;
+  display: inline-block;
 }
 /*-----------------------------------------*/
 .main {
