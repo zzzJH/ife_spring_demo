@@ -12,10 +12,10 @@ var defaultCategory,
 //////div
 $.delegate($('category'), 'p', 'click', function (event) {
 	var that = this;
-	if (hasClass(that,'active')) {
+	if (hasClass(that, 'active')) {
 		currentCategory = '';
 		currentCategory_item = '';
-		removeClass(that,'active');
+		removeClass(that, 'active');
 	} else {
 		removeAllClass('p', 'active');
 		currentCategory = '';
@@ -28,10 +28,10 @@ $.delegate($('category'), 'p', 'click', function (event) {
 ////item
 $.delegate($('category'), 'li', 'click', function () {
 	var that = this;
-	if (hasClass(that,'active')) {
+	if (hasClass(that, 'active')) {
 		currentCategory = '';
 		currentCategory_item = '';
-		removeClass(that,'active');
+		removeClass(that, 'active');
 	} else {
 		removeAllClass('li', 'active');
 		currentCategory = '';
@@ -45,13 +45,13 @@ $.delegate($('category'), 'li', 'click', function () {
 		$.data.showTask();
 		
 	}
-	$.cookieUtil.set('flagShowTask',true);
+	$.cookieUtil.set('flagShowTask', true);
 });
 //subnav——————
 $.delegate($('task'), 'dd', 'click', function () {
 	var that = this;
-	if (hasClass(that,'active')) {
-		removeClass(that,'active');
+	if (hasClass(that, 'active')) {
+		removeClass(that, 'active');
 		currentTaskName = '';
 	} else {
 		removeAllClass('dd', 'active');
@@ -86,7 +86,7 @@ $.delegate($('task'), 'a', 'click', function () {
 		dlpar = ddpar.parentNode,
 		divpar = dlpar.parentNode;
 	dd = dlpar.getElementsByTagName('dd');
-	deleteData(that,currentCategory,currentCategory_item);
+	deleteData(that, currentCategory,currentCategory_item);
 	currentTaskName = '';
 	dlpar.removeChild(ddpar);
 	if (!dd.length) {
@@ -103,7 +103,7 @@ $.addEvent($('newCategory'), 'click', function () {
 	$.newContent.newCategoryItem();
 });
 
-$.addEvent($('newTask'),'click',function () {
+$.addEvent($('newTask'), 'click', function () {
 	$.newContent.newTask();
 });
 

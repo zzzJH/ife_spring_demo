@@ -79,7 +79,7 @@ function isPhasActive() {
 }
 
 // judge id'task' have div?
-function isHasDiv () {
+function isHasDiv() {
 	var divs = $('task').getElementsByTagName('div').length;
 	if ( divs != 0) {
 		return true;
@@ -264,7 +264,7 @@ $.newContent = {
 			div.appendChild(ul);
 			currentCategory = div;
 			$('category').appendChild(div);
-			addClass(div,'active')
+			addClass(div, 'active')
 		} else if (currentCategory != defaultCategory) {
 			var value = $.newContent.getCategoryItem();
 			var curCate_id = currentCategory.id;
@@ -274,8 +274,8 @@ $.newContent = {
 			li.innerHTML = value + "<span>(5)</span>" + aStr;
 			uls[0].appendChild(li);
 			currentCategory_item = li;
-			removeAllClass(currentCategory,'active');
-			addClass(li,'active')
+			removeAllClass(currentCategory, 'active');
+			addClass(li, 'active')
 			$('task').innerHTML = '';
 		} else {
 			var value = $.newContent.getCategoryItem();
@@ -285,8 +285,8 @@ $.newContent = {
 			li.innerHTML = value + "<span>(5)</span>" + aStr;
 			uls[0].appendChild(li);
 			currentCategory_item = li;
-			removeAllClass(currentCategory,'active');
-			addClass(li,'active')
+			removeAllClass(currentCategory, 'active');
+			addClass(li, 'active')
 		}
 	},
 	newTask: function() {
@@ -338,7 +338,7 @@ $.newContent = {
 };
 
 // save defaultCategory task
-function saveDefaultTask (elementItem, elementTask, name, time, content) {
+function saveDefaultTask(elementItem, elementTask, name, time, content) {
 	itemLength = getItemPos(elementItem);
 	taskLength =getContentPos(elementTask);
 	console.log(taskLength);
@@ -362,12 +362,12 @@ function saveDefaultTask (elementItem, elementTask, name, time, content) {
 }
 
 // updata contnes to localStorage 
-function updateContents () {
+function updateContents() {
 	saveDefaultTask(currentCategory_item, currentTaskName, idValue('subtitle'), idValue('taskname'), idValue('con-text'));
 }
 
 // delete data 
-function deleteData (that,currentCategory, currentCategory_item) {
+function deleteData(that, currentCategory, currentCategory_item) {
 	console.log(that);
 	console.log(currentCategory);
 	console.log(currentCategory_item);
@@ -388,17 +388,17 @@ function deleteData (that,currentCategory, currentCategory_item) {
 }
 
 //base array splice element
-function spliceArray (array) {
+function spliceArray(array) {
 	for (var i = 0; i < array.length; i++) {
 		if (array[i] == null) {
-			array.splice(i,1);
+			array.splice(i, 1);
 			return array;
 		}
 	}
 }
 
 // base id return value
-function idValue (id) {
+function idValue(id) {
 	return $(id).value
 }
 
@@ -428,14 +428,14 @@ function save() {
 }
 
 //packge input/textarea disabled attr
-function Disabled () {
+function Disabled() {
 	$('dateFormate').style.display = "none";
 	$('subtitle').disabled = true;
 	$('taskname').disabled = true;
 	$('con-text').disabled = true;
 }
 
-function DisabledFalse () {
+function DisabledFalse() {
 	$('dateFormate').style.display = "inline-block";
 	$('subtitle').disabled = false;
 	$('taskname').disabled = false;
@@ -529,7 +529,7 @@ var userDATA = {
 			tasks: [{
 				name: "默认todo",
 				createtime: $.date.dateFormat(),
-				updatetime: showYYYYMMDD($.date.dateFormat(),false),
+				updatetime: showYYYYMMDD($.date.dateFormat(), false),
 				contents: "以完成默认加载",
 				isFinished: true
 			}]
@@ -646,7 +646,7 @@ $.data = {
 };
 
 // change YYYY-MM-DD to YYYYMMDD
-function changeYYYYMMDD () {
+function changeYYYYMMDD() {
     var value = $('taskname').value;
     var arr = value.split('-');
     var arrStr = arr.join('');
@@ -713,7 +713,7 @@ function traverseArray(array) {
 }
 
 // form YYYYMMDDHHMMSS to  YYYY-MM-DD
-function showYYYYMMDD(str,isGan) {
+function showYYYYMMDD(str, isGan) {
 	if (str.substring(4, 5) != '0') {
         var str = str.substring(0, 7);
 		var month = '0' + str.substring(4, 5);
@@ -733,7 +733,7 @@ function showYYYYMMDD(str,isGan) {
 }
 
 // accord currentTask  chagne dt.value
-function changeDt (element) {
+function changeDt(element) {
 	var dl = element.parentNode;
 	return dl.getElementsByTagName('dt')[0];
 }
