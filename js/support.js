@@ -423,7 +423,7 @@ function save() {
 	// $('con-text').disabled = true;
 	Disabled();
 	updateContents();
-	$.data.saveData();
+	//$.data.saveData();
 }
 
 //packge input/textarea disabled attr
