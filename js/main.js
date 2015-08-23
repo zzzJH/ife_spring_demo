@@ -6,20 +6,20 @@ var defaultCategory,
 	itemLength,
 	taskLength;
 //currentCategory = defaultCategory;
-
+// ————————————————————————————————————currentCategory_item.parentNode.parentNode =  currentCategory;
 //add className——————————————————————————————
 //nav—————————————
 //////div
 $.delegate($('category'), 'p', 'click', function (event) {
 	var that = this;
-	if($.event.getTarget(event).innerHTML == "分类列表") {
-		currentCategory = '';
-	}
 	if (hasClass(that,'active')) {
-		removeClass(that,'active');
 		currentCategory = '';
+		currentCategory_item = '';
+		removeClass(that,'active');
 	} else {
 		removeAllClass('p', 'active');
+		currentCategory = '';
+		currentCategory_item = '';
 		if (that.className == '') {return false}
 		addClass(that, 'active');
 		currentCategory = that.parentNode;
@@ -29,12 +29,16 @@ $.delegate($('category'), 'p', 'click', function (event) {
 $.delegate($('category'), 'li', 'click', function () {
 	var that = this;
 	if (hasClass(that,'active')) {
-		removeClass(that,'active');
+		currentCategory = '';
 		currentCategory_item = '';
+		removeClass(that,'active');
 	} else {
 		removeAllClass('li', 'active');
+		currentCategory = '';
+		currentCategory_item = '';
 		addClass(that, 'active');
 		currentCategory_item = that;
+		currentCategory = currentCategory_item.parentNode.parentNode;
 		if ($.cookieUtil.get('flagShowTask')) {
 			return;
 		}
@@ -63,11 +67,15 @@ $.delegate($('category'), 'a', 'click', function () {
 	var that = this,
 		par = that.parentNode;
 		dbpar = par.parentNode;
-		if (par.nodeName == 'p'.toUpperCase()) {
-			$('category').removeChild(dbpar);
-		} else {
-			dbpar.removeChild(par);
-		}
+	if (par.nodeName == 'p'.toUpperCase()) {
+		//currentCategory = dbpar;
+		$('category').removeChild(dbpar);
+		//currentCategory = '';
+	} else {
+		//currentCategory_item = par;
+		dbpar.removeChild(par);
+	}
+	currentCategory_item = '';
 		
 });
 //subnav————————
@@ -78,9 +86,14 @@ $.delegate($('task'), 'a', 'click', function () {
 		dlpar = ddpar.parentNode,
 		divpar = dlpar.parentNode;
 	dd = dlpar.getElementsByTagName('dd');
+	deleteData(that,currentCategory,currentCategory_item);
+	currentTaskName = '';
 	dlpar.removeChild(ddpar);
 	if (!dd.length) {
 		$('task').removeChild(divpar);
+		$('subtitle').value = '';
+		$('taskname').value = '';
+		$('con-text').value = '';
 	}
 });
 

@@ -212,47 +212,86 @@ $.newContent = {
 		// 	li.innerHTML = value + "<span>(5)</span>" + aStr;
 		// 	uls[0].appendChild(li);
 		// }
-
-		if (!currentCategory_item) {
-			if (!isPhasActive() && currentCategory) {
-				if (!$.newContent.getCategoryName()) {
-					var value = $.newContent.getCategoryName();
-				}
-				var div = createElement('div');
-				var p = createElement('p');
-				var ul = createElement('ul');
-				var time = $.date.dateFormat();
-				addClass(div, "category-list");
-				div.id = "category-item-" + time;
-				addClass(p, 'category-p');
-				p.innerHTML = value + "<span>(10)</span>" + aStr;
-				div.appendChild(p);
-				div.appendChild(ul);
-				$('category').appendChild(div);
-			} else {
-				if (!$.newContent.getCategoryName()) {
-					var value = $.newContent.getCategoryName();
-				}
-				var curCate_id = currentCategory.id;
-				var uls = $(curCate_id).getElementsByTagName('ul');
-				var li = createElement('li');
-				li.id = $.date.dateFormat();
-				li.innerHTML = value + "<span>(5)</span>" + aStr;
-				uls[0].appendChild(li);
-			}
-		} else if (currentCategory == currentCategory_item.parentNode.parentNode) {
+		//————————————————————————————————————————————————————————
+		// if (!currentCategory_item) {
+		// 	if (!isPhasActive() && currentCategory) {
+		// 		//if (!$.newContent.getCategoryName()) {
+		// 			var value = $.newContent.getCategoryName();
+		// 		//}
+		// 		var div = createElement('div');
+		// 		var p = createElement('p');
+		// 		var ul = createElement('ul');
+		// 		var time = $.date.dateFormat();
+		// 		addClass(div, "category-list");
+		// 		div.id = "category-item-" + time;
+		// 		addClass(p, 'category-p');
+		// 		p.innerHTML = value + "<span>(10)</span>" + aStr;
+		// 		div.appendChild(p);
+		// 		div.appendChild(ul);
+		// 		$('category').appendChild(div);
+		// 	} else {
+		// 		//if (!$.newContent.getCategoryName()) {
+		// 			var value = $.newContent.getCategoryName();
+		// 		//}
+		// 		var curCate_id = currentCategory.id;
+		// 		var uls = $(curCate_id).getElementsByTagName('ul');
+		// 		var li = createElement('li');
+		// 		li.id = $.date.dateFormat();
+		// 		li.innerHTML = value + "<span>(5)</span>" + aStr;
+		// 		uls[0].appendChild(li);
+		// 	}
+		// } else if (currentCategory == currentCategory_item.parentNode.parentNode) {
+		// 	var value = $.newContent.getCategoryItem();
+		// 	console.log(currentCategory);
+		// 	var curCate_id = currentCategory.id;
+		// 	var uls = $(curCate_id).getElementsByTagName('ul');
+		// 	var li = createElement('li');
+		// 	li.id = $.date.dateFormat();
+		// 	li.innerHTML = value + "<span>(5)</span>" + aStr;
+		// 	uls[0].appendChild(li);
+		// }
+		if (!currentCategory && ! currentCategory_item) {
+			var value = $.newContent.getCategoryName();
+			var div = createElement('div');
+			var p = createElement('p');
+			var ul = createElement('ul');
+			var time = $.date.dateFormat();
+			addClass(div, "category-list");
+			div.id = "category-item-" + time;
+			addClass(p, 'category-p');
+			p.innerHTML = value + "<span>(10)</span>" + aStr;
+			div.appendChild(p);
+			div.appendChild(ul);
+			currentCategory = div;
+			$('category').appendChild(div);
+			addClass(div,'active')
+		} else if (currentCategory != defaultCategory) {
 			var value = $.newContent.getCategoryItem();
-			console.log(currentCategory);
 			var curCate_id = currentCategory.id;
 			var uls = $(curCate_id).getElementsByTagName('ul');
 			var li = createElement('li');
 			li.id = $.date.dateFormat();
 			li.innerHTML = value + "<span>(5)</span>" + aStr;
 			uls[0].appendChild(li);
+			currentCategory_item = li;
+			removeAllClass(currentCategory,'active');
+			addClass(li,'active')
+			$('task').innerHTML = '';
+		} else {
+			var value = $.newContent.getCategoryItem();
+			var uls = $('category-default').getElementsByTagName('ul');
+			var li = createElement('li');
+			li.id = $.date.dateFormat();
+			li.innerHTML = value + "<span>(5)</span>" + aStr;
+			uls[0].appendChild(li);
+			currentCategory_item = li;
+			removeAllClass(currentCategory,'active');
+			addClass(li,'active')
 		}
 	},
 	newTask: function() {
 		if (!$.date.dateCompare()) {
+			console.log(1111);
 			//build li element on old element
 			var value = $.newContent.getTaskItem();
 			var dl = getDt().parentNode;
@@ -265,9 +304,10 @@ $.newContent = {
 			currentTaskName = dd;
 			// DisabledFalse();
 			//save data
-			saveDefaultTask (currentCategory_item, currentTaskName, value);
+			saveDefaultTask(currentCategory_item, currentTaskName, value);
 			$.data.showContent();
 		} else {
+			console.log(22222);
 			var value = $.newContent.getTaskItem();
 			createTask(value);
 			// var div = createElement('div');
@@ -297,9 +337,9 @@ $.newContent = {
 };
 
 // save defaultCategory task
-function saveDefaultTask (elementItem, elementContent, name, time, content) {
+function saveDefaultTask (elementItem, elementTask, name, time, content) {
 	itemLength = getItemPos(elementItem);
-	taskLength =getContentPos(elementContent);
+	taskLength =getContentPos(elementTask);
 	console.log(taskLength);
 	var userData = $.data.getDefaultStorage();
 	var itemTasks = userData.defaultCategory.subCategories[itemLength].tasks;
@@ -326,18 +366,34 @@ function updateContents () {
 }
 
 // delete data 
-function deleteData (currentCategory, currentCategory_item, currentTask) {
+function deleteData (that,currentCategory, currentCategory_item) {
+	console.log(that);
+	console.log(currentCategory);
+	console.log(currentCategory_item);
+	console.log(that.parentNode);
 	var userData = $.data.getDefaultStorage();
 	itemLength = getItemPos(currentCategory_item);
-	taskLength =getContentPos(currentTask);
+	taskLength =getContentPos(that.parentNode);
+	console.log(currentCategory);
+	console.log(itemLength);
+	console.log(taskLength);
 	if (currentCategory == defaultCategory) {
-		if (!currentTask) {
-			userData.defaultCategory.subCategories[itemLength] = '';
-			$.data.setDefaultStorage(userData);
-
-		}
+		console.log(userData.defaultCategory.subCategories[itemLength].tasks[taskLength]);
+		userData.defaultCategory.subCategories[itemLength].tasks[taskLength] = undefined;
+		spliceArray(userData.defaultCategory.subCategories[itemLength].tasks)
+		$.data.setDefaultStorage(userData);
 	}
 
+}
+
+//base array splice element
+function spliceArray (array) {
+	for (var i = 0; i < array.length; i++) {
+		if (array[i] == null) {
+			array.splice(i,1);
+			return array;
+		}
+	}
 }
 
 // base id return value
@@ -580,6 +636,7 @@ $.data = {
 			user__Data.updatetime = $.date.dateFormat();
 			changeDt(currentTaskName).innerHTML = $('taskname').value;
 			user__Data.contents = $('con-text').value;
+			user__Data.isFinished = true;
 			$.data.setDefaultStorage(user_Data);
 		}
 
@@ -592,7 +649,7 @@ function createTask(taskname) {
 	var dl = createElement('dl');
 	var dt = createElement('dt');
 	var dd = createElement('dd');
-	if (true) {};
+	//if (true) {};
 	var time = $.date.dateFormat();
 	dt.innerHTML = $.date.dateYMD();
 	dd.innerHTML = taskname + aStr;
@@ -606,6 +663,11 @@ function createTask(taskname) {
 	removeAllClass('dd', 'active');
 	addClass(dd, 'active');
 	currentTaskName = dd;
+	console.log(currentCategory_item);
+	console.log(currentTaskName);
+	console.log(taskname);
+	saveDefaultTask(currentCategory_item, currentTaskName, taskname);
+	//$.data.showContent();
 }
 
 // find itme position
@@ -625,7 +687,6 @@ function getItemPos(element) {
 function getContentPos(element) {
 	var elementPar = element.parentNode.parentNode;
 	var dds = $('task').getElementsByTagName('dd');
-	console.log(dds.length);
 	for (var i = 0; i < dds.length; i++) {
 		if (element.id == dds[i].id) {
 			return i;
