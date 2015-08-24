@@ -159,20 +159,20 @@ $.date = {
 			month = '0' + ($.date.dateNow().getMonth() + 1),
 			date = $.date.dateNow().getDate();
 		return year + '-' + month + '-' + date;
-	},
-	dateCompare: function() {
-		var dts = $('task').getElementsByTagName('dt');
-		var dtsStr;
-		var timeStr = parseFloat($.date.dateDate());
-		for (var i = 0; i < dts.length; i++) {
-			dtsStr = dts[i].innerHTML;
-			var dateStr = dtsStr.split('-');
-			if (dateStr[dateStr.length - 1] == timeStr) {
-				return false;
-			}
-		};
-		return true;
 	}
+	// dateCompare: function() {
+	// 	var dts = $('task').getElementsByTagName('dt');
+	// 	var dtsStr;
+	// 	var timeStr = parseFloat($.date.dateDate());
+	// 	for (var i = 0; i < dts.length; i++) {
+	// 		dtsStr = dts[i].innerHTML;
+	// 		var dateStr = dtsStr.split('-');
+	// 		if (dateStr[dateStr.length - 1] == timeStr) {
+	// 			return false;
+	// 		}
+	// 	};
+	// 	return true;
+	// }
 };
 
 //add  ———————— item and task———————————————————————————————————————— 
@@ -290,7 +290,7 @@ $.newContent = {
 		}
 	},
 	newTask: function() {
-		if (!$.date.dateCompare()) {
+		if (/*!$.date.dateCompare()*/!true) {   // notuse
 			console.log(1111);
 			//build li element on old element
 			var value = $.newContent.getTaskItem();
@@ -309,7 +309,8 @@ $.newContent = {
 		} else {
 			console.log(22222);
 			var value = $.newContent.getTaskItem();
-			createTask(value);
+			saveTaskValue(currentCategory_item, value);
+			sortTasks(currentCategory_item);
             $('taskname').value = $.date.dateYMD();
 			// var div = createElement('div');
 			// var dl = createElement('dl');
@@ -336,6 +337,21 @@ $.newContent = {
 		return prompt("请输入任务名称：");
 	}
 };
+
+// save taskname value to localStorage
+function saveTaskValue (currentCategory_item, value) {
+	itemLength = getItemPos(currentCategory_item);
+	var userData = $.data.getDefaultStorage();
+	var itemTasks = userData.defaultCategory.subCategories[itemLength].tasks;
+	console.log(itemTasks);
+	itemTasks[itemTasks.length] = {};
+	itemTasks[itemTasks.length - 1].name = value;
+	itemTasks[itemTasks.length - 1].createtime = $.date.dateFormat();
+	itemTasks[itemTasks.length - 1].updatetime = showYYYYMMDD(itemTasks[itemTasks.length - 1].createtime, false);
+	itemTasks[itemTasks.length - 1].contents = '';
+	itemTasks[itemTasks.length - 1].isFinished = false;
+	$.data.setDefaultStorage(userData);
+}
 
 // save defaultCategory task
 function saveDefaultTask(elementItem, elementTask, name, time, content) {
@@ -613,7 +629,7 @@ $.data = {
 		itemLength = getItemPos(currentCategory_item);
 		var userData = $.data.getDefaultStorage();
 		var itemTasks = userData.defaultCategory.subCategories[itemLength].tasks;
-		traverseArray(itemTasks);
+		//traverseArray(itemTasks);
 		removeAllClass('dd', 'active');
 	},
 	// click tasks show content
@@ -645,6 +661,51 @@ $.data = {
 	}
 };
 
+// sort tasks in localstorage 
+function sortTasks(currentCategory_item) {
+	itemLength = getItemPos(currentCategory_item);
+	currentCategory = currentCategory_item.parentNode.parentNode;
+	var user_Data = $.data.getDefaultStorage()
+	var user__Data = user_Data.defaultCategory.subCategories[itemLength].tasks;
+	var updatetimeArr = [];
+	for (var i = 0; i < user__Data.length; i++) {
+		updatetimeArr.push(user__Data[i].updatetime);
+	};
+	updatetimeArr.sort();
+	uniqArray(updatetimeArr);
+	console.log(updatetimeArr);
+	updatetimeArr.forEach(function (item, index, array) {
+		var div = createElement('div');
+		var dl = createElement('dl');
+		var dt = createElement('dt');
+		dt.innerHTML = showYYYYMMDD(item,true);
+		dl.appendChild(dt);
+		div.appendChild(dl);
+		addClass(div, 'task-item');
+		$('task').appendChild(div);
+	})
+}
+
+//uniq array
+function uniqArray(arr) {
+    var obj = {};
+    for (var i = 0, len = arr.length; i < len; i++) {
+        obj[arr[i]] = true;
+    }
+    return Object.keys(obj);
+}
+
+//compare array order
+// function compareArray(value1, value2) {
+// 	if (value1 < value2) {
+// 		return -1;
+// 	} else if (value1 > value2) {
+// 		return 1;
+// 	} else {
+// 		return 0;
+// 	}
+// }
+
 // change YYYY-MM-DD to YYYYMMDD
 function changeYYYYMMDD() {
     var value = $('taskname').value;
@@ -654,30 +715,30 @@ function changeYYYYMMDD() {
 }
 
 //packge task method 
-function createTask(taskname) {
+function createTask(dtvalue, taskname) {  // porblem
 	var div = createElement('div');
 	var dl = createElement('dl');
 	var dt = createElement('dt');
 	var dd = createElement('dd');
 	//if (true) {};
-	var time = $.date.dateFormat();
-	dt.innerHTML = $.date.dateYMD();
+	//var time = $.date.dateFormat();
+	dt.innerHTML = showYYYYMMDD(dtvalue,true);
 	dd.innerHTML = taskname + aStr;
 	dd.id = $.date.dateFormat();
 	dl.appendChild(dt);
 	dl.appendChild(dd);
 	div.appendChild(dl);
 	addClass(div, 'task-item');
-	div.id = "task-item-" + time;
+	//div.id = "task-item-" + time;
 	$('task').appendChild(div);
 	removeAllClass('dd', 'active');
 	addClass(dd, 'active');
 	currentTaskName = dd;
-	console.log(currentCategory_item);
-	console.log(currentTaskName);
-	console.log(taskname);
-	saveDefaultTask(currentCategory_item, currentTaskName, taskname);
-	//$.data.showContent();
+	// console.log(currentCategory_item);
+	// console.log(currentTaskName);
+	// console.log(taskname);
+	// saveDefaultTask(currentCategory_item, currentTaskName, taskname);
+	// $.data.showContent();
 }
 
 // find itme position

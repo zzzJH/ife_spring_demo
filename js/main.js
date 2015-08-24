@@ -4,7 +4,8 @@ var defaultCategory,
 	currentCategory_item,
 	currentTaskName,
 	itemLength,
-	taskLength;
+	taskLength,
+	flag
 //currentCategory = defaultCategory;
 // ————————————————————————————————————currentCategory_item.parentNode.parentNode =  currentCategory;
 //add className——————————————————————————————
@@ -42,8 +43,9 @@ $.delegate($('category'), 'li', 'click', function () {
 		if ($.cookieUtil.get('flagShowTask')) {
 			return;
 		}
-		$.data.showTask();
-		
+		//$.data.showTask();
+		$('task').innerHTML = '';
+		sortTasks(currentCategory_item);
 	}
 	$.cookieUtil.set('flagShowTask', true);
 });
