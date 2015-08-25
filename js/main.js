@@ -5,7 +5,8 @@ var defaultCategory,
 	currentTaskName,
 	itemLength,
 	taskLength,
-	flag
+	categoryLength;
+	//flag
 //currentCategory = defaultCategory;
 // ————————————————————————————————————currentCategory_item.parentNode.parentNode =  currentCategory;
 //add className——————————————————————————————
@@ -44,7 +45,6 @@ $.delegate($('category'), 'li', 'click', function () {
 			return;
 		}
 		//$.data.showTask();
-		$('task').innerHTML = '';
 		sortTasks(currentCategory_item);
 	}
 	$.cookieUtil.set('flagShowTask', true);
@@ -70,13 +70,17 @@ $.delegate($('category'), 'a', 'click', function () {
 		par = that.parentNode;
 		dbpar = par.parentNode;
 	if (par.nodeName == 'p'.toUpperCase()) {
-		//currentCategory = dbpar;
 		$('category').removeChild(dbpar);
 		//currentCategory = '';
 	} else {
 		//currentCategory_item = par;
+		currentCategory_item = par;		
+		console.log(currentCategory_item);
+		deleteItemData(currentCategory_item);
 		dbpar.removeChild(par);
 	}
+	$('task').innerHTML = '';
+	currentTaskName = '';
 	currentCategory_item = '';
 		
 });
@@ -88,7 +92,7 @@ $.delegate($('task'), 'a', 'click', function () {
 		dlpar = ddpar.parentNode,
 		divpar = dlpar.parentNode;
 	dd = dlpar.getElementsByTagName('dd');
-	deleteData(that, currentCategory,currentCategory_item);
+	deleteTaskData(that, currentCategory,currentCategory_item);
 	currentTaskName = '';
 	dlpar.removeChild(ddpar);
 	if (!dd.length) {
@@ -117,6 +121,7 @@ $.addEvent($('edit'), 'click', function () {
 
 $.addEvent($('save'), 'click', function () {
 	save();
+	sortTasks(currentCategory_item);
 });
 
 $.data.loadDefaultData();

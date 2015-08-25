@@ -89,13 +89,10 @@ function isHasDiv() {
 }
 
 //find dt element ——————————————————————————————————
-function getDt() {
+function getDt(dtValue) {
 	var dts = $('task').getElementsByTagName('dt');
-	var dtsStr;
-	var timeStr = parseFloat($.date.dateDate());
 	for (var i = 0; i < dts.length; i++) {
-		dtsStr = dts[i].innerHTML.split('-');
-		if (dtsStr[dtsStr.length - 1] == timeStr) {
+		if (dts[i].innerHTML == dtValue) {
 			return dts[i];
 		}
 	};
@@ -251,6 +248,7 @@ $.newContent = {
 		// 	uls[0].appendChild(li);
 		// }
 		if (!currentCategory && ! currentCategory_item) {
+			// create new div  Category
 			var value = $.newContent.getCategoryName();
 			var div = createElement('div');
 			var p = createElement('p');
@@ -263,9 +261,11 @@ $.newContent = {
 			div.appendChild(p);
 			div.appendChild(ul);
 			currentCategory = div;
+			saveNewCategory(value);
 			$('category').appendChild(div);
 			addClass(div, 'active')
 		} else if (currentCategory != defaultCategory) {
+			// create li in new div 
 			var value = $.newContent.getCategoryItem();
 			var curCate_id = currentCategory.id;
 			var uls = $(curCate_id).getElementsByTagName('ul');
@@ -275,9 +275,11 @@ $.newContent = {
 			uls[0].appendChild(li);
 			currentCategory_item = li;
 			removeAllClass(currentCategory, 'active');
+			saveItemValue(currentCategory_item, value);
 			addClass(li, 'active')
 			$('task').innerHTML = '';
 		} else {
+			// create li in defaultCatrogry
 			var value = $.newContent.getCategoryItem();
 			var uls = $('category-default').getElementsByTagName('ul');
 			var li = createElement('li');
@@ -285,33 +287,35 @@ $.newContent = {
 			li.innerHTML = value + "<span>(5)</span>" + aStr;
 			uls[0].appendChild(li);
 			currentCategory_item = li;
+			saveItemValue(currentCategory_item, value);
+			$('task').innerHTML = '';
 			removeAllClass(currentCategory, 'active');
 			addClass(li, 'active')
 		}
 	},
 	newTask: function() {
-		if (/*!$.date.dateCompare()*/!true) {   // notuse
-			console.log(1111);
-			//build li element on old element
-			var value = $.newContent.getTaskItem();
-			var dl = getDt().parentNode;
-			var dd = createElement('dd');
-			dd.innerHTML = value + aStr;
-			dd.id = $.date.dateFormat();
-			dl.appendChild(dd);
-			removeAllClass('dd', 'active');
-			addClass(dd, 'active');
-			currentTaskName = dd;
-			// DisabledFalse();
-			//save data
-			saveDefaultTask(currentCategory_item, currentTaskName, value);
-			$.data.showContent();
-		} else {
-			console.log(22222);
-			var value = $.newContent.getTaskItem();
-			saveTaskValue(currentCategory_item, value);
-			sortTasks(currentCategory_item);
-            $('taskname').value = $.date.dateYMD();
+		// if (/*!$.date.dateCompare()*/!true) {   // notuse
+		// 	console.log(1111);
+		// 	//build li element on old element
+		// 	var value = $.newContent.getTaskItem();
+		// 	var dl = getDt().parentNode;
+		// 	var dd = createElement('dd');
+		// 	dd.innerHTML = value + aStr;
+		// 	dd.id = $.date.dateFormat();
+		// 	dl.appendChild(dd);
+		// 	removeAllClass('dd', 'active');
+		// 	addClass(dd, 'active');
+		// 	currentTaskName = dd;
+		// 	// DisabledFalse();
+		// 	//save data
+		// 	saveDefaultTask(currentCategory_item, currentTaskName, value);
+		// 	$.data.showContent();
+		// } else {
+		// 	console.log(22222);
+		var value = $.newContent.getTaskItem();
+		saveTaskValue(currentCategory_item, value);
+		sortTasks(currentCategory_item);
+        $('taskname').value = $.date.dateYMD();
 			// var div = createElement('div');
 			// var dl = createElement('dl');
 			// var dt = createElement('dt');
@@ -324,8 +328,7 @@ $.newContent = {
 			// div.appendChild(dl);
 			// addClass(div,'task-item');
 			// div.id = "task-item-" + time;
-			// $('task').appendChild(div);
-		}
+			// $('task').appendChild(div);655
 	},
 	getCategoryName: function() {
 		return prompt("请输入分类名称：");
@@ -338,62 +341,119 @@ $.newContent = {
 	}
 };
 
-// save taskname value to localStorage
-function saveTaskValue (currentCategory_item, value) {
+//save new category value to localStorage
+function saveNewCategory(value) {
+	var userData = $.data.getDefaultStorage();
+	var category = userData.categories;
+	category[category.length] = {};
+	category[category.length - 1].name = value;
+	category[category.length - 1].subCategories = [];
+	$.data.setDefaultStorage(userData);
+}
+
+// save Item value to localSrorage
+function saveItemValue(currentCategory_item, value) {
 	itemLength = getItemPos(currentCategory_item);
 	var userData = $.data.getDefaultStorage();
-	var itemTasks = userData.defaultCategory.subCategories[itemLength].tasks;
-	console.log(itemTasks);
-	itemTasks[itemTasks.length] = {};
-	itemTasks[itemTasks.length - 1].name = value;
-	itemTasks[itemTasks.length - 1].createtime = $.date.dateFormat();
-	itemTasks[itemTasks.length - 1].updatetime = showYYYYMMDD(itemTasks[itemTasks.length - 1].createtime, false);
-	itemTasks[itemTasks.length - 1].contents = '';
-	itemTasks[itemTasks.length - 1].isFinished = false;
+	if (currentCategory_item.parentNode.parentNode == defaultCategory) {
+		var subItem = userData.defaultCategory.subCategories;
+		subItem[subItem.length] = {};
+		subItem[subItem.length - 1].name = value;
+		subItem[subItem.length - 1].tasks = [];
+	} else {
+		categoryLength = getCategoryPos(currentCategory);
+		
+		var subItem = userData.categories[categoryLength].subCategories;
+		subItem[subItem.length] = {};
+		subItem[subItem.length - 1].name = value;
+		subItem[subItem.length - 1].tasks = [];
+	}
+	$.data.setDefaultStorage(userData);
+}
+
+// save taskname value to localStorage
+function saveTaskValue(currentCategory_item, value) {
+	if (currentCategory_item.parentNode.parentNode == defaultCategory) {
+		itemLength = getItemPos(currentCategory_item);
+		var userData = $.data.getDefaultStorage();
+		var itemTasks = userData.defaultCategory.subCategories[itemLength].tasks;
+		console.log(itemTasks);
+		itemTasks[itemTasks.length] = {};
+		itemTasks[itemTasks.length - 1].name = value;
+		itemTasks[itemTasks.length - 1].createtime = $.date.dateFormat();
+		itemTasks[itemTasks.length - 1].updatetime = showYYYYMMDD(itemTasks[itemTasks.length - 1].createtime, false);
+		itemTasks[itemTasks.length - 1].contents = '';
+		itemTasks[itemTasks.length - 1].isFinished = false;
+	} else {
+		categoryLength = getCategoryPos(currentCategory);
+		itemLength = getItemPos(currentCategory_item);
+		var userData = $.data.getDefaultStorage();
+		var itemTasks = userData.categories[categoryLength].subCategories[itemLength].tasks;
+		console.log(itemTasks);
+		itemTasks[itemTasks.length] = {};
+		itemTasks[itemTasks.length - 1].name = value;
+		itemTasks[itemTasks.length - 1].createtime = $.date.dateFormat();
+		itemTasks[itemTasks.length - 1].updatetime = showYYYYMMDD(itemTasks[itemTasks.length - 1].createtime, false);
+		itemTasks[itemTasks.length - 1].contents = '';
+		itemTasks[itemTasks.length - 1].isFinished = false;
+	}
 	$.data.setDefaultStorage(userData);
 }
 
 // save defaultCategory task
-function saveDefaultTask(elementItem, elementTask, name, time, content) {
-	itemLength = getItemPos(elementItem);
-	taskLength =getContentPos(elementTask);
-	console.log(taskLength);
+// function saveDefaultTask(elementItem, elementTask, name, time, content) {
+// 	itemLength = getItemPos(elementItem);
+// 	taskLength =getContentPos(elementTask);
+// 	console.log(taskLength);
+// 	var userData = $.data.getDefaultStorage();
+// 	var itemTasks = userData.defaultCategory.subCategories[itemLength].tasks;
+// 	itemTasks[taskLength] = {};
+// 	itemTasks[taskLength].name = name;
+// 	itemTasks[taskLength].createtime = $.date.dateFormat();
+// 	itemTasks[taskLength].updatetime = showYYYYMMDD(itemTasks[taskLength].createtime,false);
+// 	if (time) {
+// 		console.log(time);
+// 		itemTasks[taskLength].updatetime = changeYYYYMMDD();
+// 	}
+// 	itemTasks[taskLength].contents = '';
+// 	if (content) {
+// 		itemTasks[taskLength].contents = content;
+// 	}
+// 	itemTasks[taskLength].isFinished = false;
+// 	//$('taskname').value = $.date.dateYMD();
+// 	$.data.setDefaultStorage(userData);	
+// }
+
+// // updata contnes to localStorage 
+// function updateContents() {
+// 	saveDefaultTask(currentCategory_item, currentTaskName, idValue('subtitle'), idValue('taskname'), idValue('con-text'));
+// }
+
+// deleta item data
+function deleteItemData(currentCategory_item) {
 	var userData = $.data.getDefaultStorage();
-	var itemTasks = userData.defaultCategory.subCategories[itemLength].tasks;
-	itemTasks[taskLength] = {};
-	itemTasks[taskLength].name = name;
-	itemTasks[taskLength].createtime = $.date.dateFormat();
-	itemTasks[taskLength].updatetime = showYYYYMMDD(itemTasks[taskLength].createtime,false);
-	if (time) {
-		console.log(time);
-		itemTasks[taskLength].updatetime = changeYYYYMMDD();
-	}
-	itemTasks[taskLength].contents = '';
-	if (content) {
-		itemTasks[taskLength].contents = content;
-	}
-	itemTasks[taskLength].isFinished = false;
-	//$('taskname').value = $.date.dateYMD();
-	$.data.setDefaultStorage(userData);	
+	var user_Data = userData.defaultCategory.subCategories;
+	itemLength = getItemPos(currentCategory_item);
+	// for (var i = 0; i < user_Data.length; i++) {
+	// 	if (user_Data[i].name == ) {};
+	// }
+	user_Data[itemLength] = undefined;
+	spliceArray(user_Data);
+	$.data.setDefaultStorage(userData);
 }
 
-// updata contnes to localStorage 
-function updateContents() {
-	saveDefaultTask(currentCategory_item, currentTaskName, idValue('subtitle'), idValue('taskname'), idValue('con-text'));
-}
-
-// delete data 
-function deleteData(that, currentCategory, currentCategory_item) {
-	console.log(that);
-	console.log(currentCategory);
-	console.log(currentCategory_item);
-	console.log(that.parentNode);
+// delete Task data 
+function deleteTaskData(that, currentCategory, currentCategory_item) {
+	// console.log(that);
+	// console.log(currentCategory);
+	// console.log(currentCategory_item);
+	// console.log(that.parentNode);
 	var userData = $.data.getDefaultStorage();
 	itemLength = getItemPos(currentCategory_item);
-	taskLength =getContentPos(that.parentNode);
-	console.log(currentCategory);
-	console.log(itemLength);
-	console.log(taskLength);
+	taskLength =getTaskPos(that.parentNode);
+	// console.log(currentCategory);
+	// console.log(itemLength);
+	// console.log(taskLength);
 	if (currentCategory == defaultCategory) {
 		console.log(userData.defaultCategory.subCategories[itemLength].tasks[taskLength]);
 		userData.defaultCategory.subCategories[itemLength].tasks[taskLength] = undefined;
@@ -439,7 +499,7 @@ function save() {
 	// $('taskname').disabled = true;
 	// $('con-text').disabled = true;
 	Disabled();
-	updateContents();
+	//updateContents();
 	$.data.saveData();
 }
 
@@ -634,15 +694,13 @@ $.data = {
 	},
 	// click tasks show content
 	showContent: function() {
-		taskLength = getContentPos(currentTaskName);
+		itemLength = getItemPos(currentCategory_item);
+		taskLength = getTaskPos(currentTaskName);
 		var userData = $.data.getDefaultStorage();
 		var tasks = userData.defaultCategory.subCategories[itemLength].tasks[taskLength];
+		console.log(tasks);
 		$('subtitle').value = tasks.name;
-		if (tasks.updatetime) {
-			$('taskname').value = showYYYYMMDD(tasks.updatetime,true);
-		} else {
-			$('taskname').value = showYYYYMMDD(tasks.createtime,true);
-		}
+		$('taskname').value = showYYYYMMDD(tasks.updatetime, true);
 		$('con-text').value = tasks.contents;
 	},
 	saveData: function() {
@@ -661,6 +719,22 @@ $.data = {
 	}
 };
 
+// accord dt.innerHTML/updatime to find in tasks index
+function getTaskPos(currentTaskName) {
+	itemLength = getItemPos(currentCategory_item);
+	var userData = $.data.getDefaultStorage();
+	var tasks = userData.defaultCategory.subCategories[itemLength].tasks;
+	console.log(tasks);
+	for (var i = 0; i < tasks.length; i++) {
+		console.log(tasks[i].createtime);
+		if (tasks[i].createtime == currentTaskName.id) {
+			return i;
+		}
+	}
+}
+
+
+
 // sort tasks in localstorage 
 function sortTasks(currentCategory_item) {
 	itemLength = getItemPos(currentCategory_item);
@@ -672,9 +746,11 @@ function sortTasks(currentCategory_item) {
 		updatetimeArr.push(user__Data[i].updatetime);
 	};
 	updatetimeArr.sort();
-	uniqArray(updatetimeArr);
+	updatetimeArr = uniqArray(updatetimeArr);
 	console.log(updatetimeArr);
+	$('task').innerHTML = '';
 	updatetimeArr.forEach(function (item, index, array) {
+		//create div Element sort by updatetime
 		var div = createElement('div');
 		var dl = createElement('dl');
 		var dt = createElement('dt');
@@ -683,7 +759,24 @@ function sortTasks(currentCategory_item) {
 		div.appendChild(dl);
 		addClass(div, 'task-item');
 		$('task').appendChild(div);
-	})
+	});
+	// insert data to div
+	for (var i = 0; i < user__Data.length; i++) {
+		insertData(user__Data[i].updatetime, user__Data[i].name, user__Data[i].createtime);
+	}
+}
+
+// packge insert data to div
+function insertData(updatetime, taskname, id) {
+	var updatetimeYYYYMMDD = showYYYYMMDD(updatetime, true);
+	var dl = getDt(updatetimeYYYYMMDD).parentNode;
+	var dd = createElement('dd');
+	dd.innerHTML = taskname + aStr;
+	dd.id = id;
+	dl.appendChild(dd);
+		//removeAllClass('dd', 'active');
+		//addClass(dd, 'active');
+		//currentTaskName = dd;
 }
 
 //uniq array
@@ -741,6 +834,16 @@ function createTask(dtvalue, taskname) {  // porblem
 	// $.data.showContent();
 }
 
+//get category position
+function getCategoryPos(currentCategory) {
+	var divs = $('category').getElementsByTagName('div');
+	for (var i = 0; i < divs.length; i++) {
+		if (divs[i].id == currentCategory.id) {
+			return	i - 2;
+		}
+	}
+}
+
 // find itme position
 function getItemPos(element) {
 	if (element.parentNode.parentNode == defaultCategory) {
@@ -750,10 +853,16 @@ function getItemPos(element) {
 				return i;
 			}
 		}
+	} else {
+		var category = element.parentNode.parentNode;
+		var lis = category.getElementsByTagName('li');
+		for (var i = 0; i < lis.length; i++) {
+			if (element.id == lis[i].id) {
+				return i;
+			}
+		}
 	}
-	return false;
 }
-
 // find task position
 function getContentPos(element) {
 	var elementPar = element.parentNode.parentNode;
@@ -796,5 +905,6 @@ function showYYYYMMDD(str, isGan) {
 // accord currentTask  chagne dt.value
 function changeDt(element) {
 	var dl = element.parentNode;
-	return dl.getElementsByTagName('dt')[0];
+	var dt = dl.getElementsByTagName('dt')[0];
+	return dt;
 }
