@@ -70,6 +70,8 @@ $.delegate($('category'), 'a', 'click', function () {
 		par = that.parentNode;
 		dbpar = par.parentNode;
 	if (par.nodeName == 'p'.toUpperCase()) {
+		currentCategory = dbpar;
+		deleteCategory(currentCategory);
 		$('category').removeChild(dbpar);
 		//currentCategory = '';
 	} else {

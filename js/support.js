@@ -274,9 +274,10 @@ $.newContent = {
 			li.innerHTML = value + "<span>(5)</span>" + aStr;
 			uls[0].appendChild(li);
 			currentCategory_item = li;
+			console.log(currentCategory_item);
 			removeAllClass(currentCategory, 'active');
-			saveItemValue(currentCategory_item, value);
 			addClass(li, 'active')
+			saveItemValue(currentCategory_item, value);
 			$('task').innerHTML = '';
 		} else {
 			// create li in defaultCatrogry
@@ -315,6 +316,7 @@ $.newContent = {
 		var value = $.newContent.getTaskItem();
 		saveTaskValue(currentCategory_item, value);
 		sortTasks(currentCategory_item);
+		$('subtitle').value = value;
         $('taskname').value = $.date.dateYMD();
 			// var div = createElement('div');
 			// var dl = createElement('dl');
@@ -361,8 +363,7 @@ function saveItemValue(currentCategory_item, value) {
 		subItem[subItem.length - 1].name = value;
 		subItem[subItem.length - 1].tasks = [];
 	} else {
-		categoryLength = getCategoryPos(currentCategory);
-		
+		categoryLength = getCategoryPos(currentCategory_item.parentNode.parentNode);
 		var subItem = userData.categories[categoryLength].subCategories;
 		subItem[subItem.length] = {};
 		subItem[subItem.length - 1].name = value;
@@ -373,9 +374,9 @@ function saveItemValue(currentCategory_item, value) {
 
 // save taskname value to localStorage
 function saveTaskValue(currentCategory_item, value) {
+	itemLength = getItemPos(currentCategory_item);
+	var userData = $.data.getDefaultStorage();
 	if (currentCategory_item.parentNode.parentNode == defaultCategory) {
-		itemLength = getItemPos(currentCategory_item);
-		var userData = $.data.getDefaultStorage();
 		var itemTasks = userData.defaultCategory.subCategories[itemLength].tasks;
 		console.log(itemTasks);
 		itemTasks[itemTasks.length] = {};
@@ -386,8 +387,6 @@ function saveTaskValue(currentCategory_item, value) {
 		itemTasks[itemTasks.length - 1].isFinished = false;
 	} else {
 		categoryLength = getCategoryPos(currentCategory);
-		itemLength = getItemPos(currentCategory_item);
-		var userData = $.data.getDefaultStorage();
 		var itemTasks = userData.categories[categoryLength].subCategories[itemLength].tasks;
 		console.log(itemTasks);
 		itemTasks[itemTasks.length] = {};
@@ -429,17 +428,34 @@ function saveTaskValue(currentCategory_item, value) {
 // 	saveDefaultTask(currentCategory_item, currentTaskName, idValue('subtitle'), idValue('taskname'), idValue('con-text'));
 // }
 
+//delete category
+function deleteCategory(currentCategory) {
+	categoryLength = getCategoryPos(currentCategory);
+	var userData = $.data.getDefaultStorage();
+	userData.categories[categoryLength] = null;
+	spliceArray(userData.categories);
+	$.data.setDefaultStorage(userData);
+}
+
 // deleta item data
 function deleteItemData(currentCategory_item) {
 	var userData = $.data.getDefaultStorage();
-	var user_Data = userData.defaultCategory.subCategories;
 	itemLength = getItemPos(currentCategory_item);
+	var currentCategory = currentCategory_item.parentNode.parentNode;
+	if (currentCategory == defaultCategory) {
+		var user_Data = userData.defaultCategory.subCategories;
+		user_Data[itemLength] = undefined;
+		spliceArray(user_Data);
+	} else {
+		var user_Data = userData.categories[categoryLength].subCategories;
+		user_Data[itemLength] = undefined;
+		spliceArray(user_Data);
+	}
+	$.data.setDefaultStorage(userData);
 	// for (var i = 0; i < user_Data.length; i++) {
 	// 	if (user_Data[i].name == ) {};
 	// }
-	user_Data[itemLength] = undefined;
-	spliceArray(user_Data);
-	$.data.setDefaultStorage(userData);
+	
 }
 
 // delete Task data 
@@ -450,6 +466,7 @@ function deleteTaskData(that, currentCategory, currentCategory_item) {
 	// console.log(that.parentNode);
 	var userData = $.data.getDefaultStorage();
 	itemLength = getItemPos(currentCategory_item);
+	categoryLength = getCategoryPos(currentCategory);
 	taskLength =getTaskPos(that.parentNode);
 	// console.log(currentCategory);
 	// console.log(itemLength);
@@ -458,6 +475,10 @@ function deleteTaskData(that, currentCategory, currentCategory_item) {
 		console.log(userData.defaultCategory.subCategories[itemLength].tasks[taskLength]);
 		userData.defaultCategory.subCategories[itemLength].tasks[taskLength] = undefined;
 		spliceArray(userData.defaultCategory.subCategories[itemLength].tasks)
+		$.data.setDefaultStorage(userData);
+	} else {
+		userData.categories[categoryLength].subCategories[itemLength].tasks[taskLength] = undefined;
+		spliceArray(userData.categories[categoryLength].subCategories[itemLength].tasks)
 		$.data.setDefaultStorage(userData);
 	}
 
@@ -695,17 +716,22 @@ $.data = {
 	// click tasks show content
 	showContent: function() {
 		itemLength = getItemPos(currentCategory_item);
+		categoryLength = getCategoryPos(currentCategory_item.parentNode.parentNode);
 		taskLength = getTaskPos(currentTaskName);
 		var userData = $.data.getDefaultStorage();
-		var tasks = userData.defaultCategory.subCategories[itemLength].tasks[taskLength];
+		if (currentCategory_item.parentNode.parentNode == defaultCategory) {
+			var tasks = userData.defaultCategory.subCategories[itemLength].tasks[taskLength];
+		} else {
+			var tasks = userData.categories[categoryLength].subCategories[itemLength].tasks[taskLength];
+		}
 		console.log(tasks);
 		$('subtitle').value = tasks.name;
 		$('taskname').value = showYYYYMMDD(tasks.updatetime, true);
 		$('con-text').value = tasks.contents;
 	},
 	saveData: function() {
+		var user_Data = $.data.getDefaultStorage()
 		if (currentCategory == defaultCategory) {
-			var user_Data = $.data.getDefaultStorage()
 			var user__Data = user_Data.defaultCategory.subCategories[itemLength].tasks[taskLength];
 			user__Data.name = $('subtitle').value;
 			user__Data.updatetime = changeYYYYMMDD();
@@ -713,17 +739,29 @@ $.data = {
 			changeDt(currentTaskName).innerHTML = $('taskname').value;
 			user__Data.contents = $('con-text').value;
 			user__Data.isFinished = true;
-			$.data.setDefaultStorage(user_Data);
+		} else {
+			var user__Data = user_Data.categories[categoryLength].subCategories[itemLength].tasks[taskLength];
+			user__Data.name = $('subtitle').value;
+			user__Data.updatetime = changeYYYYMMDD();
+            console.log(user__Data.updatetime);
+			changeDt(currentTaskName).innerHTML = $('taskname').value;
+			user__Data.contents = $('con-text').value;
+			user__Data.isFinished = true;
 		}
-
+		$.data.setDefaultStorage(user_Data);
 	}
 };
 
 // accord dt.innerHTML/updatime to find in tasks index
 function getTaskPos(currentTaskName) {
 	itemLength = getItemPos(currentCategory_item);
+	categoryLength = getCategoryPos(currentCategory_item.parentNode.parentNode);
 	var userData = $.data.getDefaultStorage();
-	var tasks = userData.defaultCategory.subCategories[itemLength].tasks;
+	if (currentCategory_item.parentNode.parentNode == defaultCategory) {
+		var tasks = userData.defaultCategory.subCategories[itemLength].tasks;
+	} else {
+		var tasks = userData.categories[categoryLength].subCategories[itemLength].tasks;
+	}	
 	console.log(tasks);
 	for (var i = 0; i < tasks.length; i++) {
 		console.log(tasks[i].createtime);
@@ -738,9 +776,15 @@ function getTaskPos(currentTaskName) {
 // sort tasks in localstorage 
 function sortTasks(currentCategory_item) {
 	itemLength = getItemPos(currentCategory_item);
+	categoryLength = getCategoryPos(currentCategory_item.parentNode.parentNode);
 	currentCategory = currentCategory_item.parentNode.parentNode;
 	var user_Data = $.data.getDefaultStorage()
-	var user__Data = user_Data.defaultCategory.subCategories[itemLength].tasks;
+	if (currentCategory_item.parentNode.parentNode == defaultCategory) {
+		var user__Data = user_Data.defaultCategory.subCategories[itemLength].tasks;
+	} else {
+		var user__Data = user_Data.categories[categoryLength].subCategories[itemLength].tasks;
+	}
+	
 	var updatetimeArr = [];
 	for (var i = 0; i < user__Data.length; i++) {
 		updatetimeArr.push(user__Data[i].updatetime);
@@ -839,7 +883,7 @@ function getCategoryPos(currentCategory) {
 	var divs = $('category').getElementsByTagName('div');
 	for (var i = 0; i < divs.length; i++) {
 		if (divs[i].id == currentCategory.id) {
-			return	i - 2;
+			return	i - 1;
 		}
 	}
 }
