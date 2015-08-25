@@ -2,8 +2,7 @@
 ## BaiDu IFE Spring Task003
 
 ## now
-###render task from localStorage
 #### done
-	slove createElement div
+	data  save&delete
 #### need
-	judge tasks.name to render task	
+	accord isFinished to sort
