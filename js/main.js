@@ -77,11 +77,13 @@ $.delegate($('category'), 'a', 'click', function () {
 		//currentCategory = '';
 	} else {
 		//currentCategory_item = par;
-		currentCategory_item = par;		
-		console.log(currentCategory_item);
+		currentCategory_item = par;
+		//console.log(currentCategory_item);
 		deleteItemData(currentCategory_item);
 		dbpar.removeChild(par);
 	}
+	findSpan(currentCategory_item);
+	findAllTask();	
 	$('task').innerHTML = '';
 	currentTaskName = '';
 	currentCategory_item = '';
@@ -96,6 +98,8 @@ $.delegate($('task'), 'a', 'click', function () {
 		divpar = dlpar.parentNode;
 	dd = dlpar.getElementsByTagName('dd');
 	deleteTaskData(that, currentCategory,currentCategory_item);
+	findSpan(currentCategory_item);
+	findAllTask();	
 	currentTaskName = '';
 	dlpar.removeChild(ddpar);
 	if (!dd.length) {

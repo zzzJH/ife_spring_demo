@@ -95,6 +95,46 @@ function getDt(dtValue) {
 	};
 }
 
+// find span element
+function findSpan(currentCategory_item) {
+	var currentCategory = currentCategory_item.parentNode.parentNode;
+	var itemSpan = currentCategory_item.getElementsByTagName('span')[0];
+	var pSpan = currentCategory.getElementsByTagName('span')[0];
+	itemLength = getItemPos(currentCategory_item);
+	categoryLength = getCategoryPos(currentCategory);
+	var userData = $.data.getDefaultStorage();
+	var pLength = [];
+	if (currentCategory == defaultCategory) {
+		var pSpanValue = userData.defaultCategory.subCategories;
+		var tasks = userData.defaultCategory.subCategories[itemLength].tasks;
+	} else {
+		var pSpanValue = userData.categories[categoryLength].subCategories;
+		var tasks = userData.categories[categoryLength].subCategories[itemLength].tasks;
+	}
+	itemSpan.innerHTML = '( ' + tasks.length + ' )';
+	for (var i = 0; i < pSpanValue.length; i++) {
+	 	pLength.push(pSpanValue[i].tasks.length);
+	 }
+	 var sum = pLength.reduce(function(prev, cur, index, array){
+		return prev + cur;
+	});
+	 // console.log(pLength);
+	 pSpan.innerHTML = '( ' + sum + ' )';
+}
+
+// fing all task num
+function findAllTask() {
+	var ps = $('category').getElementsByTagName('p');
+	var allNum = $('nav').getElementsByTagName('p')[0].getElementsByTagName('span')[0];
+	var num;
+	var re = /\d+/;
+	for (var i = 1; i < ps.length; i++) {
+		var spans = ps[i].getElementsByTagName('span')[0].innerHTML;
+		num =+ parseInt(re.exec(spans)[0]);
+	}
+	allNum.innerHTML = '( ' + num + ' )';
+} 
+
 // handle event ——————————————————————————————————
 $.event = {
 	addEvent: function(element, type, handler) {
@@ -258,15 +298,18 @@ $.newContent = {
 			addClass(div, "category-list");
 			div.id = "category-item-" + time;
 			addClass(p, 'category-p');
-			p.innerHTML = value + "<span>(10)</span>" + aStr;
+			p.innerHTML = value + "<span>(0)</span>" + aStr;
 			div.appendChild(p);
 			div.appendChild(ul);
 			currentCategory = div;
 			saveNewCategory(value);
 			$('category').appendChild(div);
-			addClass(div, 'active')
+			addClass(p, 'active')
 		} else if (currentCategory != defaultCategory) {
 			// create li in new div 
+			if (currentCategory_item) {
+				removeClass(currentCategory_item, 'active');
+			}
 			var value = $.newContent.getCategoryItem();
 			if (!value) {
 				return;
@@ -275,15 +318,20 @@ $.newContent = {
 			var uls = $(curCate_id).getElementsByTagName('ul');
 			var li = createElement('li');
 			li.id = $.date.dateFormat();
-			li.innerHTML = value + "<span>(5)</span>" + aStr;
+			li.innerHTML = value + "<span>(0)</span>" + aStr;
 			uls[0].appendChild(li);
 			currentCategory_item = li;
-			console.log(currentCategory_item);
-			removeAllClass(currentCategory, 'active');
+			//console.log(currentCategory_item);
+			if (hasClass(li.parentNode.previousSibling, 'active')) {
+				removeClass(li.parentNode.previousSibling, 'active');
+			}
 			addClass(li, 'active')
 			saveItemValue(currentCategory_item, value);
 			$('task').innerHTML = '';
 		} else {
+			if (currentCategory_item) {
+				removeClass(currentCategory_item, 'active');
+			}
 			// create li in defaultCatrogry
 			var value = $.newContent.getCategoryItem();
 			if (!value) {
@@ -292,14 +340,18 @@ $.newContent = {
 			var uls = $('category-default').getElementsByTagName('ul');
 			var li = createElement('li');
 			li.id = $.date.dateFormat();
-			li.innerHTML = value + "<span>(5)</span>" + aStr;
+			li.innerHTML = value + "<span>(0)</span>" + aStr;
 			uls[0].appendChild(li);
 			currentCategory_item = li;
 			saveItemValue(currentCategory_item, value);
 			$('task').innerHTML = '';
-			removeAllClass(currentCategory, 'active');
+			if (hasClass(li.parentNode.previousSibling, 'active')) {
+				removeClass(li.parentNode.previousSibling, 'active');
+			}
 			addClass(li, 'active')
 		}
+		//findSpan(currentCategory_item);
+		findAllTask();
 	},
 	newTask: function() {
 		// if (/*!$.date.dateCompare()*/!true) {   // notuse
@@ -389,7 +441,7 @@ function saveTaskValue(currentCategory_item, value) {
 	var userData = $.data.getDefaultStorage();
 	if (currentCategory_item.parentNode.parentNode == defaultCategory) {
 		var itemTasks = userData.defaultCategory.subCategories[itemLength].tasks;
-		console.log(itemTasks);
+		//console.log(itemTasks);
 		itemTasks[itemTasks.length] = {};
 		itemTasks[itemTasks.length - 1].name = value;
 		itemTasks[itemTasks.length - 1].createtime = $.date.dateFormat();
@@ -399,7 +451,7 @@ function saveTaskValue(currentCategory_item, value) {
 	} else {
 		categoryLength = getCategoryPos(currentCategory);
 		var itemTasks = userData.categories[categoryLength].subCategories[itemLength].tasks;
-		console.log(itemTasks);
+		//console.log(itemTasks);
 		itemTasks[itemTasks.length] = {};
 		itemTasks[itemTasks.length - 1].name = value;
 		itemTasks[itemTasks.length - 1].createtime = $.date.dateFormat();
@@ -483,7 +535,7 @@ function deleteTaskData(that, currentCategory, currentCategory_item) {
 	// console.log(itemLength);
 	// console.log(taskLength);
 	if (currentCategory == defaultCategory) {
-		console.log(userData.defaultCategory.subCategories[itemLength].tasks[taskLength]);
+		//console.log(userData.defaultCategory.subCategories[itemLength].tasks[taskLength]);
 		userData.defaultCategory.subCategories[itemLength].tasks[taskLength] = undefined;
 		spliceArray(userData.defaultCategory.subCategories[itemLength].tasks)
 		$.data.setDefaultStorage(userData);
@@ -632,16 +684,16 @@ var userData = {
 var userDATA = {
 	defaultCategory: {
 		name: "默认分类",
-		subCategories: [{
-			name: "默认task",
-			tasks: [{
-				name: "默认todo",
-				createtime: $.date.dateFormat(),
-				updatetime: showYYYYMMDD($.date.dateFormat(), false),
-				contents: "以完成默认加载",
-				isFinished: false
-			}]
-		}]
+		subCategories: [
+			//name: "默认task",
+			// tasks: [{
+			// 	name: "默认todo",
+			// 	createtime: $.date.dateFormat(),
+			// 	updatetime: showYYYYMMDD($.date.dateFormat(), false),
+			// 	contents: "以完成默认加载",
+			// 	isFinished: false
+			// }]
+		]
 	},
 	categories: [
 
@@ -679,19 +731,19 @@ $.data = {
 		div.id = "category-default";
 		defaultCategory = div;
 		currentCategory = defaultCategory;
-		addClass(p, 'category-p active')
-		p.innerHTML = defaultCategoryP + "<span>(10)</span>"
+		addClass(p, 'category-p')
+		p.innerHTML = defaultCategoryP + "<span>(0)</span>"
 		appendChild(div, p);
 		appendChild(div, ul);
 		appendChild($('category'), div);
 		// // subnav zone 
-		var categoryItemName = userData.defaultCategory.subCategories[0].name;
-		var curCate_id = currentCategory.id;
-		var uls = $(curCate_id).getElementsByTagName('ul');
-		var li = createElement('li');
-		li.id = $.date.dateFormat();
-		li.innerHTML = categoryItemName + "<span>(5)</span>" + aStr;
-		uls[0].appendChild(li);
+		// var categoryItemName = userData.defaultCategory.subCategories[0].name;
+		// var curCate_id = currentCategory.id;
+		// var uls = $(curCate_id).getElementsByTagName('ul');
+		// var li = createElement('li');
+		// li.id = $.date.dateFormat();
+		// li.innerHTML = categoryItemName + "<span>(0)</span>" + aStr;
+		// uls[0].appendChild(li);
 		// // middel task  zone
 		// with(userData.defaultCategory.subCategories[0].tasks[0]) {
 		// 	var taskName = name;
@@ -735,7 +787,7 @@ $.data = {
 		} else {
 			var tasks = userData.categories[categoryLength].subCategories[itemLength].tasks[taskLength];
 		}
-		console.log(tasks);
+		//console.log(tasks);
 		$('subtitle').value = tasks.name;
 		$('taskname').value = showYYYYMMDD(tasks.updatetime, true);
 		$('con-text').value = tasks.contents;
@@ -777,9 +829,9 @@ function getTaskPos(currentTaskName) {
 	} else {
 		var tasks = userData.categories[categoryLength].subCategories[itemLength].tasks;
 	}	
-	console.log(tasks);
+	//console.log(tasks);
 	for (var i = 0; i < tasks.length; i++) {
-		console.log(tasks[i].createtime);
+		//console.log(tasks[i].createtime);
 		if (tasks[i].createtime == currentTaskName.id) {
 			return i;
 		}
@@ -799,7 +851,7 @@ function sortTasks(currentCategory_item, finish, flag) {
 	} else {
 		var user__Data = user_Data.categories[categoryLength].subCategories[itemLength].tasks;
 	}
-	console.log(user__Data);
+	//console.log(user__Data);
 	if (finish) {
 		if (flag) {
 			var user__Data = findIsFinish(currentCategory_item, flag);
@@ -807,14 +859,14 @@ function sortTasks(currentCategory_item, finish, flag) {
 			var user__Data = findIsFinish(currentCategory_item, flag);
 		}
 	}
-	console.log(user__Data);
+	//console.log(user__Data);
 	var updatetimeArr = [];
 	for (var i = 0; i < user__Data.length; i++) {
 		updatetimeArr.push(user__Data[i].updatetime);
 	};
 	updatetimeArr.sort();
 	updatetimeArr = uniqArray(updatetimeArr);
-	console.log(updatetimeArr);
+	//console.log(updatetimeArr);
 	$('task').innerHTML = '';
 	updatetimeArr.forEach(function (item, index, array) {
 		//create div Element sort by updatetime
@@ -831,6 +883,8 @@ function sortTasks(currentCategory_item, finish, flag) {
 	for (var i = 0; i < user__Data.length; i++) {
 		insertData(user__Data[i].updatetime, user__Data[i].name, user__Data[i].createtime);
 	}
+	findSpan(currentCategory_item);
+	findAllTask();
 }
 
 // packge insert data to div
