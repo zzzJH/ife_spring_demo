@@ -20,6 +20,7 @@ $.delegate($('category'), 'p', 'click', function (event) {
 		removeClass(that, 'active');
 	} else {
 		removeAllClass('p', 'active');
+		removeAllClass('li', 'active');
 		currentCategory = '';
 		currentCategory_item = '';
 		if (that.className == '') {return false}
@@ -122,8 +123,44 @@ $.addEvent($('edit'), 'click', function () {
 });
 
 $.addEvent($('save'), 'click', function () {
-	save();
+	if (!(currentCategory_item && currentTaskName)) {
+		return;
+	}
+	save(false);
 	sortTasks(currentCategory_item);
+});
+
+$.addEvent($('finish'), 'click', function() {
+	save(true);
+	sortTasks(currentCategory_item);
+})
+
+// show task is finished
+$.addEvent($('all'), 'click', function () {
+	removeAllClass('button', 'btn-active');
+	addClass(this, 'btn-active');
+	if (!currentCategory_item) {
+		return;
+	}
+	sortTasks(currentCategory_item);
+});
+
+$.addEvent($('unfinished'), 'click', function () {
+	removeAllClass('button', 'btn-active');
+	addClass(this, 'btn-active');
+	if (!currentCategory_item) {
+		return;
+	}
+	sortTasks(currentCategory_item, true, false);
+});
+
+$.addEvent($('finished'), 'click', function () {
+	removeAllClass('button', 'btn-active');
+	addClass(this, 'btn-active');
+	if (!currentCategory_item) {
+		return;
+	}
+	sortTasks(currentCategory_item, true, true);
 });
 
 $.data.loadDefaultData();

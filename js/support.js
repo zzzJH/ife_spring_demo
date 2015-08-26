@@ -51,7 +51,7 @@ function removeClass(element, className) {
 }
 // removeAll className="active"
 function removeAllClass(tag, className) {
-	if (tag != 'dd') {
+	if (tag == 'li') {
 		var classNames = $('nav').getElementsByClassName(className);
 		for (var i = 0; i < classNames.length; i++) {
 			removeClass(classNames[i], className);
@@ -59,11 +59,8 @@ function removeAllClass(tag, className) {
 	} else {
 		var classNames = $('subnav').getElementsByClassName(className);
 		for (var i = 0; i < classNames.length; i++) {
-			if (removeClass(classNames[i], className)) {
-				return true;
-			}
+			removeClass(classNames[i], className);
 		}
-		return false;
 	}
 }
 
@@ -247,9 +244,13 @@ $.newContent = {
 		// 	li.innerHTML = value + "<span>(5)</span>" + aStr;
 		// 	uls[0].appendChild(li);
 		// }
+		// 
 		if (!currentCategory && ! currentCategory_item) {
 			// create new div  Category
 			var value = $.newContent.getCategoryName();
+			if (!value) {
+				return;
+			}
 			var div = createElement('div');
 			var p = createElement('p');
 			var ul = createElement('ul');
@@ -267,6 +268,9 @@ $.newContent = {
 		} else if (currentCategory != defaultCategory) {
 			// create li in new div 
 			var value = $.newContent.getCategoryItem();
+			if (!value) {
+				return;
+			}
 			var curCate_id = currentCategory.id;
 			var uls = $(curCate_id).getElementsByTagName('ul');
 			var li = createElement('li');
@@ -282,6 +286,9 @@ $.newContent = {
 		} else {
 			// create li in defaultCatrogry
 			var value = $.newContent.getCategoryItem();
+			if (!value) {
+				return;
+			}
 			var uls = $('category-default').getElementsByTagName('ul');
 			var li = createElement('li');
 			li.id = $.date.dateFormat();
@@ -314,10 +321,14 @@ $.newContent = {
 		// } else {
 		// 	console.log(22222);
 		var value = $.newContent.getTaskItem();
+		if (!value) {
+			return;
+		}
 		saveTaskValue(currentCategory_item, value);
 		sortTasks(currentCategory_item);
 		$('subtitle').value = value;
         $('taskname').value = $.date.dateYMD();
+        $('con-text').value = '';
 			// var div = createElement('div');
 			// var dl = createElement('dl');
 			// var dt = createElement('dt');
@@ -511,7 +522,7 @@ function edit() {
 	DisabledFalse();
 }
 
-function save() {
+function save(flag) {
 	if ($('subtitle').value == '') {
 		return;
 	}
@@ -521,7 +532,7 @@ function save() {
 	// $('con-text').disabled = true;
 	Disabled();
 	//updateContents();
-	$.data.saveData();
+	$.data.saveData(flag);
 }
 
 //packge input/textarea disabled attr
@@ -628,7 +639,7 @@ var userDATA = {
 				createtime: $.date.dateFormat(),
 				updatetime: showYYYYMMDD($.date.dateFormat(), false),
 				contents: "以完成默认加载",
-				isFinished: true
+				isFinished: false
 			}]
 		}]
 	},
@@ -729,25 +740,29 @@ $.data = {
 		$('taskname').value = showYYYYMMDD(tasks.updatetime, true);
 		$('con-text').value = tasks.contents;
 	},
-	saveData: function() {
-		var user_Data = $.data.getDefaultStorage()
+	saveData: function(flag) {
+		//console.log(categoryLength + '1');
+		var user_Data = $.data.getDefaultStorage();
+		itemLength = getItemPos(currentCategory_item);
+		taskLength = getTaskPos(currentTaskName);
 		if (currentCategory == defaultCategory) {
 			var user__Data = user_Data.defaultCategory.subCategories[itemLength].tasks[taskLength];
-			user__Data.name = $('subtitle').value;
-			user__Data.updatetime = changeYYYYMMDD();
-            console.log(user__Data.updatetime);
-			changeDt(currentTaskName).innerHTML = $('taskname').value;
-			user__Data.contents = $('con-text').value;
-			user__Data.isFinished = true;
+			// user__Data.name = $('subtitle').value;
+			// user__Data.updatetime = changeYYYYMMDD();
+   //          //console.log(user__Data.updatetime);
+			// changeDt(currentTaskName).innerHTML = $('taskname').value;
+			// user__Data.contents = $('con-text').value;
+			// user__Data.isFinished = flag;
 		} else {
+			categoryLength = getCategoryPos(currentCategory_item.parentNode.parentNode);
 			var user__Data = user_Data.categories[categoryLength].subCategories[itemLength].tasks[taskLength];
-			user__Data.name = $('subtitle').value;
-			user__Data.updatetime = changeYYYYMMDD();
-            console.log(user__Data.updatetime);
-			changeDt(currentTaskName).innerHTML = $('taskname').value;
-			user__Data.contents = $('con-text').value;
-			user__Data.isFinished = true;
 		}
+		user__Data.name = $('subtitle').value;
+		user__Data.updatetime = changeYYYYMMDD();
+        //console.log(user__Data.updatetime);
+		changeDt(currentTaskName).innerHTML = $('taskname').value;
+		user__Data.contents = $('con-text').value;
+		user__Data.isFinished = flag;
 		$.data.setDefaultStorage(user_Data);
 	}
 };
@@ -774,17 +789,25 @@ function getTaskPos(currentTaskName) {
 
 
 // sort tasks in localstorage 
-function sortTasks(currentCategory_item) {
+function sortTasks(currentCategory_item, finish, flag) {
 	itemLength = getItemPos(currentCategory_item);
 	categoryLength = getCategoryPos(currentCategory_item.parentNode.parentNode);
 	currentCategory = currentCategory_item.parentNode.parentNode;
-	var user_Data = $.data.getDefaultStorage()
+	var user_Data = $.data.getDefaultStorage();
 	if (currentCategory_item.parentNode.parentNode == defaultCategory) {
 		var user__Data = user_Data.defaultCategory.subCategories[itemLength].tasks;
 	} else {
 		var user__Data = user_Data.categories[categoryLength].subCategories[itemLength].tasks;
 	}
-	
+	console.log(user__Data);
+	if (finish) {
+		if (flag) {
+			var user__Data = findIsFinish(currentCategory_item, flag);
+		} else {
+			var user__Data = findIsFinish(currentCategory_item, flag);
+		}
+	}
+	console.log(user__Data);
 	var updatetimeArr = [];
 	for (var i = 0; i < user__Data.length; i++) {
 		updatetimeArr.push(user__Data[i].updatetime);
@@ -818,9 +841,9 @@ function insertData(updatetime, taskname, id) {
 	dd.innerHTML = taskname + aStr;
 	dd.id = id;
 	dl.appendChild(dd);
-		//removeAllClass('dd', 'active');
-		//addClass(dd, 'active');
-		//currentTaskName = dd;
+		// removeAllClass('dd', 'active');
+		// addClass(dd, 'active');
+		// currentTaskName = dd;
 }
 
 //uniq array
@@ -951,4 +974,23 @@ function changeDt(element) {
 	var dl = element.parentNode;
 	var dt = dl.getElementsByTagName('dt')[0];
 	return dt;
+}
+
+function findIsFinish(currentCategory_item, flag) {
+	itemLength = getItemPos(currentCategory_item);
+	categoryLength = getCategoryPos(currentCategory_item.parentNode.parentNode);
+	currentCategory = currentCategory_item.parentNode.parentNode;
+	var user_Data = $.data.getDefaultStorage()
+	if (currentCategory_item.parentNode.parentNode == defaultCategory) {
+		var user__Data = user_Data.defaultCategory.subCategories[itemLength].tasks;
+	} else {
+		var user__Data = user_Data.categories[categoryLength].subCategories[itemLength].tasks;
+	}
+	var isFinish = [];
+	for (var i = 0; i < user__Data.length; i++) {
+		if (user__Data[i].isFinished == flag) {
+			isFinish.push(user__Data[i]);
+		}
+	}
+	return isFinish;
 }
