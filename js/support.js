@@ -95,6 +95,31 @@ function getDt(dtValue) {
 	};
 }
 
+//find p value on delete
+function findPValueonDelete(currentCategory_item) {
+	var userData = $.data.getDefaultStorage();
+	var pLength = [];
+	var currentCategory = currentCategory_item.parentNode.parentNode;
+	categoryLength = getCategoryPos(currentCategory);
+	var pSpan = currentCategory.getElementsByTagName('span')[0];
+	if (currentCategory == defaultCategory) {
+		var pSpanValue = userData.defaultCategory.subCategories;
+	} else {
+		var pSpanValue = userData.categories[categoryLength].subCategories;
+	}
+	for (var i = 0; i < pSpanValue.length; i++) {
+	 	pLength.push(pSpanValue[i].tasks.length);
+	 }
+	 if (pLength.length == 0) {
+	 	return pSpan.innerHTML = "( 0 )";
+	 }
+	 var sum = pLength.reduce(function(prev, cur, index, array){
+		return prev + cur;
+	});
+	 // console.log(pLength);
+	 pSpan.innerHTML = '( ' + sum + ' )';
+}
+
 // find span element
 function findSpan(currentCategory_item) {
 	var currentCategory = currentCategory_item.parentNode.parentNode;
@@ -126,11 +151,13 @@ function findSpan(currentCategory_item) {
 function findAllTask() {
 	var ps = $('category').getElementsByTagName('p');
 	var allNum = $('nav').getElementsByTagName('p')[0].getElementsByTagName('span')[0];
-	var num;
+	var num = 0;
 	var re = /\d+/;
 	for (var i = 1; i < ps.length; i++) {
+		console.log(ps[i]);
 		var spans = ps[i].getElementsByTagName('span')[0].innerHTML;
-		num =+ parseInt(re.exec(spans)[0]);
+		console.log(parseInt(re.exec(spans)[0]));
+		num = num + parseInt(re.exec(spans)[0]);
 	}
 	allNum.innerHTML = '( ' + num + ' )';
 } 

@@ -14,6 +14,10 @@ var defaultCategory,
 //////div
 $.delegate($('category'), 'p', 'click', function (event) {
 	var that = this;
+	$('subtitle').value = '';
+	$('taskname').value = '';
+	$('con-text').value = '';
+	$('task').innerHTML = '';
 	if (hasClass(that, 'active')) {
 		currentCategory = '';
 		currentCategory_item = '';
@@ -31,10 +35,14 @@ $.delegate($('category'), 'p', 'click', function (event) {
 ////item
 $.delegate($('category'), 'li', 'click', function () {
 	var that = this;
+	$('subtitle').value = '';
+	$('taskname').value = '';
+	$('con-text').value = '';
 	if (hasClass(that, 'active')) {
 		currentCategory = '';
 		currentCategory_item = '';
 		removeClass(that, 'active');
+		removeAllClass('dd', 'active');
 	} else {
 		removeAllClass('li', 'active');
 		currentCategory = '';
@@ -80,13 +88,17 @@ $.delegate($('category'), 'a', 'click', function () {
 		currentCategory_item = par;
 		//console.log(currentCategory_item);
 		deleteItemData(currentCategory_item);
+		findPValueonDelete(currentCategory_item);
 		dbpar.removeChild(par);
 	}
-	findSpan(currentCategory_item);
+	
 	findAllTask();	
-	$('task').innerHTML = '';
+	$('subtitle').value = '';
+	$('taskname').value = '';
+	$('con-text').value = '';
 	currentTaskName = '';
 	currentCategory_item = '';
+	currentCategory = '';
 		
 });
 //subnav————————
