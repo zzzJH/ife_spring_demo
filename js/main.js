@@ -31,6 +31,7 @@ $.delegate($('category'), 'p', 'click', function (event) {
 		addClass(that, 'active');
 		currentCategory = that.parentNode;
 	}
+	setCurrent(currentCategory, currentCategory_item,currentTaskName);
 });
 ////item
 $.delegate($('category'), 'li', 'click', function () {
@@ -50,13 +51,14 @@ $.delegate($('category'), 'li', 'click', function () {
 		addClass(that, 'active');
 		currentCategory_item = that;
 		currentCategory = currentCategory_item.parentNode.parentNode;
-		if ($.cookieUtil.get('flagShowTask')) {
-			return;
-		}
+		// if ($.cookieUtil.get('flagShowTask')) {
+		// 	return;
+		// }
 		//$.data.showTask();
 		sortTasks(currentCategory_item);
 	}
-	$.cookieUtil.set('flagShowTask', true);
+	//$.cookieUtil.set('flagShowTask', true);
+	setCurrent(currentCategory, currentCategory_item, currentTaskName);
 });
 //subnav——————
 $.delegate($('task'), 'dd', 'click', function () {
@@ -70,6 +72,7 @@ $.delegate($('task'), 'dd', 'click', function () {
 		currentTaskName = that;
 		$.data.showContent();
 	}
+	setCurrent(currentCategory, currentCategory_item, currentTaskName);
 });
 
 //delete element——————————————————————————————————————————
@@ -82,6 +85,7 @@ $.delegate($('category'), 'a', 'click', function () {
 		currentCategory = dbpar;
 		deleteCategory(currentCategory);
 		$('category').removeChild(dbpar);
+		$('task').innerHTML = '';
 		//currentCategory = '';
 	} else {
 		//currentCategory_item = par;
@@ -144,6 +148,8 @@ $.addEvent($('save'), 'click', function () {
 	}
 	save(false);
 	sortTasks(currentCategory_item);
+	removeAllClass('dd', 'active');
+	addClass(currentTaskName, 'active');
 });
 
 $.addEvent($('finish'), 'click', function() {
@@ -179,7 +185,13 @@ $.addEvent($('finished'), 'click', function () {
 	sortTasks(currentCategory_item, true, true);
 });
 
-$.data.loadDefaultData();
+
+if (!localStorage.getItem('flag')) {
+	$.data.loadDefaultData();
+} else {
+	$.renderElement.renderCategory();
+}
+localStorage.setItem("flag","loadDone");
 // $.cookieUtil.set("flag",true);
 // console.log($.cookieUtil.get("flag"));
 // console.log(document.cookie);

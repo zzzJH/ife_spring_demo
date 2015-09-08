@@ -1,5 +1,6 @@
 // gloable variable
 var aStr = "<a href='#'>删除</a>";
+var spanStr = "<span>(" + ' '+ '0' + ' ' + ")</span>";
 //return ID
 function $(id) {
 	return document.getElementById(id);
@@ -154,9 +155,9 @@ function findAllTask() {
 	var num = 0;
 	var re = /\d+/;
 	for (var i = 1; i < ps.length; i++) {
-		console.log(ps[i]);
+		//console.log(ps[i]);
 		var spans = ps[i].getElementsByTagName('span')[0].innerHTML;
-		console.log(parseInt(re.exec(spans)[0]));
+		//console.log(parseInt(re.exec(spans)[0]));
 		num = num + parseInt(re.exec(spans)[0]);
 	}
 	allNum.innerHTML = '( ' + num + ' )';
@@ -213,12 +214,18 @@ $.date = {
 			hour = $.date.dateNow().getHours().toString(),
 			minute = $.date.dateNow().getMinutes().toString(),
 			second = $.date.dateNow().getSeconds().toString();
+		if (date.indexOf('0') === -1) {
+			date =  '0' + date;
+		}
 		return year + month + date + hour + minute + second;
 	},
 	dateYMD: function() {
 		var year = $.date.dateNow().getFullYear(),
 			month = '0' + ($.date.dateNow().getMonth() + 1),
-			date = $.date.dateNow().getDate();
+			date = $.date.dateNow().getDate().toString();
+		if (date.indexOf('0') === -1) {
+			date =  '0' + date;
+		}
 		return year + '-' + month + '-' + date;
 	}
 	// dateCompare: function() {
@@ -328,8 +335,9 @@ $.newContent = {
 			var time = $.date.dateFormat();
 			addClass(div, "category-list");
 			div.id = "category-item-" + time;
+			setDivLocalStorage(div.id);
 			addClass(p, 'category-p');
-			p.innerHTML = value + "<span>(0)</span>" + aStr;
+			p.innerHTML = value + spanStr + aStr;
 			div.appendChild(p);
 			div.appendChild(ul);
 			currentCategory = div;
@@ -353,7 +361,8 @@ $.newContent = {
 			var uls = $(curCate_id).getElementsByTagName('ul');
 			var li = createElement('li');
 			li.id = $.date.dateFormat();
-			li.innerHTML = value + "<span>(0)</span>" + aStr;
+			setnotDefaultLiLocalStorage(li.id);
+			li.innerHTML = value + spanStr + aStr;
 			uls[0].appendChild(li);
 			currentCategory_item = li;
 			//console.log(currentCategory_item);
@@ -379,7 +388,8 @@ $.newContent = {
 			var uls = $('category-default').getElementsByTagName('ul');
 			var li = createElement('li');
 			li.id = $.date.dateFormat();
-			li.innerHTML = value + "<span>(0)</span>" + aStr;
+			setLiLocalStorage(li.id);
+			li.innerHTML = value + spanStr + aStr;
 			uls[0].appendChild(li);
 			currentCategory_item = li;
 			saveItemValue(currentCategory_item, value);
@@ -642,28 +652,28 @@ function DisabledFalse() {
 }
 
 //Cookie
-$.cookieUtil = {
-	get: function(name) {
-		var cookieName = encodeURIComponent(name) + "=",
-			cookieStart = document.cookie.indexOf(cookieName),
-			cookieValue = null;
-		if (cookieStart > -1) {
-			var cookieEnd = document.cookie.indexOf(";", cookieStart);
-			if (cookieEnd == -1) {
-				cookieEnd = document.cookie.length;
-			}
-			cookieValue = decodeURIComponent(document.cookie.substring(cookieStart + cookieName.length, cookieEnd));
-		}
-		return cookieValue;
-	},
-	set: function(name, value) {
-		var cookieText = encodeURIComponent(name) + "=" + encodeURIComponent(value);
-		document.cookie = cookieText;
-	},
-	unset: function(name) {
-		this.set(name, "");
-	},
-};
+// $.cookieUtil = {
+// 	get: function(name) {
+// 		var cookieName = encodeURIComponent(name) + "=",
+// 			cookieStart = document.cookie.indexOf(cookieName),
+// 			cookieValue = null;
+// 		if (cookieStart > -1) {
+// 			var cookieEnd = document.cookie.indexOf(";", cookieStart);
+// 			if (cookieEnd == -1) {
+// 				cookieEnd = document.cookie.length;
+// 			}
+// 			cookieValue = decodeURIComponent(document.cookie.substring(cookieStart + cookieName.length, cookieEnd));
+// 		}
+// 		return cookieValue;
+// 	},
+// 	set: function(name, value) {
+// 		var cookieText = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+// 		document.cookie = cookieText;
+// 	},
+// 	unset: function(name) {
+// 		this.set(name, "");
+// 	},
+// };
 
 //save localStorage————————————————————————————
 /* data default save way
@@ -751,14 +761,17 @@ $.data = {
 	},
 	// init page   load data
 	loadDefaultData: function() {
-		if (!$.cookieUtil.get('flag')) {
-			$.data.setDefaultStorage(userDATA);
-			$('subtitle').value = '';
-			$('taskname').value = '';
-			$('con-text').value = '';
+		//if (!localStorage.getItem('flag')) {
+		$.data.setDefaultStorage(userDATA);
+			// $('subtitle').value = '';
+			// $('taskname').value = '';
+			// $('con-text').value = '';
 			//$.cookieUtil.unset("flag");
-		}
-		$.cookieUtil.set('flag', true);
+		// } else {
+		// 	return false;
+		// }
+		// localStorage.setItem("flag","loadDone");
+		// $.cookieUtil.set('flag', true);
 		// set value == null
 		var userData = $.data.getDefaultStorage();
 		//nav zone
@@ -769,9 +782,9 @@ $.data = {
 		addClass(div, 'category-list');
 		div.id = "category-default";
 		defaultCategory = div;
-		currentCategory = defaultCategory;
+		//currentCategory = defaultCategory;
 		addClass(p, 'category-p')
-		p.innerHTML = defaultCategoryP + "<span>(0)</span>"
+		p.innerHTML = defaultCategoryP + spanStr;
 		appendChild(div, p);
 		appendChild(div, ul);
 		appendChild($('category'), div);
@@ -934,9 +947,8 @@ function insertData(updatetime, taskname, id) {
 	dd.innerHTML = taskname + aStr;
 	dd.id = id;
 	dl.appendChild(dd);
-		// removeAllClass('dd', 'active');
-		// addClass(dd, 'active');
-		// currentTaskName = dd;
+	// removeAllClass('dd', 'active');
+	// addClass(dd, 'active');
 }
 
 //uniq array
@@ -1086,4 +1098,106 @@ function findIsFinish(currentCategory_item, flag) {
 		}
 	}
 	return isFinish;
+}
+
+// page refresh keep status
+$.renderElement = {
+	renderCategory: function () {
+		var userData = $.data.getDefaultStorage();
+		var idLocalStorage = JSON.parse(localStorage.getItem("CatrgoryId"));
+		// defaultCategory
+		var defaultCategoryP = userData.defaultCategory.name;
+		var div = createElement('div');
+		var p = createElement('p');
+		var ul = createElement('ul');
+		addClass(div, 'category-list');
+		div.id = "category-default";
+		addClass(p, 'category-p')
+		p.innerHTML = defaultCategoryP + spanStr
+		appendChild(div, p);
+		appendChild(div, ul);
+		appendChild($('category'), div);
+		defaultCategory = $('category-default');
+		if (userData.defaultCategory.subCategories.length) {
+			var user_Data = userData.defaultCategory.subCategories;
+			var categoryliid = idLocalStorage[0];
+			for (var j = 0; j < user_Data.length; j++) {
+				var uls = $('category-default').getElementsByTagName('ul');
+				var li = createElement('li');
+				li.id = categoryliid[j];
+				li.innerHTML = user_Data[j].name + spanStr + aStr;
+				uls[0].appendChild(li);
+			}
+		}
+		// not defaultCategory
+		if (userData.categories.length) {
+			var user_Data = userData.categories;
+			var divID = idLocalStorage[1];
+			for (var i = 0; i < user_Data.length; i++) {
+				var div = createElement('div');
+				var p = createElement('p');
+				var ul = createElement('ul');
+				var time = $.date.dateFormat();
+				addClass(div, "category-list");
+				div.id = divID[i];
+				addClass(p, 'category-p');
+				p.innerHTML = user_Data[i].name + spanStr + aStr;
+				div.appendChild(p);
+				div.appendChild(ul);
+				$('category').appendChild(div);
+				// not defaultCategory subli
+				if (user_Data[i].subCategories.length) {
+					var user__Data = user_Data[i].subCategories;
+					var divliId = idLocalStorage[2];
+					for (var k = 0; k < user__Data.length; k++) {
+						var curCate_id = divID[i];
+						var uls = $(curCate_id).getElementsByTagName('ul');
+						var li = createElement('li');
+						li.id = divliId[k];
+						li.innerHTML = user__Data[k].name + spanStr + aStr;
+						uls[0].appendChild(li);
+						//console.log(currentCategory_item);
+						// if (hasClass(li.parentNode.previousSibling, 'active')) {
+						// 	removeClass(li.parentNode.previousSibling, 'active');
+						// }
+						// addClass(li, 'active')
+						// saveItemValue(currentCategory_item, value);
+						// $('task').innerHTML = '';
+					}
+				}
+			}
+		}
+		sortTasks(JSON.parse(localStorage.getItem("current"))[1]);
+	},
+	renderTask: function () {
+
+	}
+
+};
+
+// save category id to localStorage
+var categoryIddArr = [[],[],[]];
+function setLiLocalStorage(id) {
+	categoryIddArr[0].push(id);
+	localStorage.setItem("CatrgoryId",JSON.stringify(categoryIddArr));
+}
+
+function setDivLocalStorage(id) {
+	categoryIddArr[1].push(id);
+	localStorage.setItem("CatrgoryId",JSON.stringify(categoryIddArr));
+}
+
+function setnotDefaultLiLocalStorage(id) {
+	categoryIddArr[2].push(id);
+	localStorage.setItem("CatrgoryId",JSON.stringify(categoryIddArr));
+}
+
+// save current status
+// ------------------------------not done 
+function setCurrent(currentCategory, currentCategory_item, currentTaskName) {
+	var a = currentCategory.getAttribute('id'),
+		b = currentCategory_item.getAttribute('id'),
+		c = currentTaskName.getAttribute('id');
+	var arr = [a, b, c];
+	localStorage.setItem("current", JSON.stringify(arr));
 }
