@@ -174,6 +174,9 @@ $.addEvent($('unfinished'), 'click', function () {
 		return;
 	}
 	sortTasks(currentCategory_item, true, false);
+	$('subtitle').value = '';
+	$('taskname').value = '';
+	$('con-text').value = '';
 });
 
 $.addEvent($('finished'), 'click', function () {
@@ -183,6 +186,9 @@ $.addEvent($('finished'), 'click', function () {
 		return;
 	}
 	sortTasks(currentCategory_item, true, true);
+	$('subtitle').value = '';
+	$('taskname').value = '';
+	$('con-text').value = '';
 });
 
 
@@ -190,6 +196,7 @@ if (!localStorage.getItem('flag')) {
 	$.data.loadDefaultData();
 } else {
 	$.renderElement.renderCategory();
+    $.renderElement.renderActive();
     //$.renderElement.renderClassName();
 }
 localStorage.setItem("flag","loadDone");

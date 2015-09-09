@@ -1,6 +1,6 @@
 // gloable variable
 var aStr = "<a href='#'>删除</a>";
-var spanStr = "<span>(" + ' '+ '0' + ' ' + ")</span>";
+var spanStr = "<span>( 0 )</span>";
 //return ID
 function $(id) {
 	return document.getElementById(id);
@@ -141,7 +141,7 @@ function findSpan(currentCategory_item) {
 	for (var i = 0; i < pSpanValue.length; i++) {
 	 	pLength.push(pSpanValue[i].tasks.length);
 	 }
-	 var sum = pLength.reduce(function(prev, cur, index, array){
+	var sum = pLength.reduce(function(prev, cur, index, array){
 		return prev + cur;
 	});
 	 // console.log(pLength);
@@ -151,12 +151,13 @@ function findSpan(currentCategory_item) {
 // fing all task num
 function findAllTask() {
 	var ps = $('category').getElementsByTagName('p');
-	var allNum = $('nav').getElementsByTagName('p')[0].getElementsByTagName('span')[0];
+	var allNum = $('allTask');
 	var num = 0;
 	var re = /\d+/;
 	for (var i = 1; i < ps.length; i++) {
 		//console.log(ps[i]);
 		var spans = ps[i].getElementsByTagName('span')[0].innerHTML;
+		//console.log(spans);
 		//console.log(parseInt(re.exec(spans)[0]));
 		num = num + parseInt(re.exec(spans)[0]);
 	}
@@ -361,7 +362,7 @@ $.newContent = {
 			var uls = $(curCate_id).getElementsByTagName('ul');
 			var li = createElement('li');
 			li.id = $.date.dateFormat();
-			setnotDefaultLiLocalStorage(li.id);
+			//setnotDefaultLiLocalStorage(li.id);
 			li.innerHTML = value + spanStr + aStr;
 			uls[0].appendChild(li);
 			currentCategory_item = li;
@@ -370,7 +371,7 @@ $.newContent = {
 				removeClass(li.parentNode.previousSibling, 'active');
 			}
 			addClass(li, 'active')
-			saveItemValue(currentCategory_item, value);
+			saveItemValue(currentCategory_item, value, li.id);
 			$('task').innerHTML = '';
 		} else {
 			if (currentCategory_item) {
@@ -388,11 +389,11 @@ $.newContent = {
 			var uls = $('category-default').getElementsByTagName('ul');
 			var li = createElement('li');
 			li.id = $.date.dateFormat();
-			setLiLocalStorage(li.id);
+			//setLiLocalStorage(li.id);
 			li.innerHTML = value + spanStr + aStr;
 			uls[0].appendChild(li);
 			currentCategory_item = li;
-			saveItemValue(currentCategory_item, value);
+			saveItemValue(currentCategory_item, value ,li.id);
 			// $('task').innerHTML = '';
 			if (hasClass(li.parentNode.previousSibling, 'active')) {
 				removeClass(li.parentNode.previousSibling, 'active');
@@ -470,21 +471,27 @@ function saveNewCategory(value) {
 }
 
 // save Item value to localSrorage
-function saveItemValue(currentCategory_item, value) {
+function saveItemValue(currentCategory_item, value, id) {
 	itemLength = getItemPos(currentCategory_item);
 	var userData = $.data.getDefaultStorage();
 	if (currentCategory_item.parentNode.parentNode == defaultCategory) {
 		var subItem = userData.defaultCategory.subCategories;
-		subItem[subItem.length] = {};
-		subItem[subItem.length - 1].name = value;
-		subItem[subItem.length - 1].tasks = [];
+		// subItem[subItem.length] = {};
+		// subItem[subItem.length - 1].name = value;
+		// subItem[subItem.length - 1].tasks = [];
+		// subItem[subItem.length - 1].id = id;
 	} else {
 		categoryLength = getCategoryPos(currentCategory_item.parentNode.parentNode);
 		var subItem = userData.categories[categoryLength].subCategories;
-		subItem[subItem.length] = {};
-		subItem[subItem.length - 1].name = value;
-		subItem[subItem.length - 1].tasks = [];
+		// subItem[subItem.length] = {};
+		// subItem[subItem.length - 1].name = value;
+		// subItem[subItem.length - 1].tasks = [];
+		// subItem[subItem.length - 1].id = id;
 	}
+	subItem[subItem.length] = {};
+	subItem[subItem.length - 1].name = value;
+	subItem[subItem.length - 1].tasks = [];
+	subItem[subItem.length - 1].id = id;
 	$.data.setDefaultStorage(userData);
 }
 
@@ -740,6 +747,7 @@ var userDATA = {
 		name: "默认分类",
 		subCategories: [
 			//name: "默认task",
+			//id: "",
 			// tasks: [{
 			// 	name: "默认todo",
 			// 	createtime: $.date.dateFormat(),
@@ -903,7 +911,7 @@ function sortTasks(currentCategory_item, finish, flag) {
 	categoryLength = getCategoryPos(currentCategory_item.parentNode.parentNode);
 	currentCategory = currentCategory_item.parentNode.parentNode;
 	var user_Data = $.data.getDefaultStorage();
-	if (currentCategory_item.parentNode.parentNode == defaultCategory) {
+	if (currentCategory == defaultCategory) {
 		var user__Data = user_Data.defaultCategory.subCategories[itemLength].tasks;
 	} else {
 		var user__Data = user_Data.categories[categoryLength].subCategories[itemLength].tasks;
@@ -1117,40 +1125,55 @@ $.renderElement = {
 		var ul = createElement('ul');
 		addClass(div, 'category-list');
 		div.id = "category-default";
-		addClass(p, 'category-p')
-		p.innerHTML = defaultCategoryP + spanStr
+		addClass(p, 'category-p');
+		//var spanStr = "<span>( " + userData.defaultCategory.subCategories.length + " )</span>";
+		p.innerHTML = defaultCategoryP + "<span>( 0 )</span>";
 		appendChild(div, p);
 		appendChild(div, ul);
 		appendChild($('category'), div);
 		defaultCategory = $('category-default');
+		//console.log(div.id);
+		p.innerHTML = defaultCategoryP + "<span>(" + " " + $.renderElement.renderPNum($("category-default")) + " " + ")</span>";
+		//console.log($.renderElement.renderPNum($("category-default")));
+		// console.log(1111111);
+		// console.log(p);
+        // item 
 		if (userData.defaultCategory.subCategories.length) {
 			var user_Data = userData.defaultCategory.subCategories;
-			var categoryliid = idLocalStorage[0];
+			//var categoryliid = idLocalStorage[0];
 			for (var j = 0; j < user_Data.length; j++) {
 				var uls = $('category-default').getElementsByTagName('ul');
-				var li = createElement('li');
-				li.id = categoryliid[j];
+				var li = createElement('li');                
+				li.id = user_Data[j].id;
+				var spanStr = "<span>(" + " " + user_Data[j].tasks.length + " " + " ) </span>";
 				li.innerHTML = user_Data[j].name + spanStr + aStr;
+                //console.log(user_Data[j].tasks.length);
 				uls[0].appendChild(li);
+				$.renderElement.renderitemNum($(li.id));
+				//findSpan($(li.id));
 			}
 		}
 		// not defaultCategory
 		if (userData.categories.length) {
 			var user_Data = userData.categories;
-			var divID = idLocalStorage[1];
+			var divID = idLocalStorage;
 			for (var i = 0; i < user_Data.length; i++) {
 				var div = createElement('div');
 				var p = createElement('p');
 				var ul = createElement('ul');
-				var time = $.date.dateFormat();
+				//var time = $.date.dateFormat();
 				addClass(div, "category-list");
 				div.id = divID[i];
 				addClass(p, 'category-p');
+				//var spanStr = "<span>( " + user_Data[i].subCategories.length + " )</span>";
 				p.innerHTML = user_Data[i].name + spanStr + aStr;
 				div.appendChild(p);
 				div.appendChild(ul);
 				$('category').appendChild(div);
-				// not defaultCategory subli
+				p.innerHTML = user_Data[i].name + "<span>(" + " " + $.renderElement.renderPNum($(div.id)) + " " + ")</span>" + aStr;
+
+				// not defaultCategory 
+				//item 
 				if (user_Data[i].subCategories.length) {
 					var user__Data = user_Data[i].subCategories;
 					var divliId = idLocalStorage[2];
@@ -1158,9 +1181,14 @@ $.renderElement = {
 						var curCate_id = divID[i];
 						var uls = $(curCate_id).getElementsByTagName('ul');
 						var li = createElement('li');
-						li.id = divliId[k];
+						li.id = user__Data[k].id;
 						li.innerHTML = user__Data[k].name + spanStr + aStr;
 						uls[0].appendChild(li);
+						//console.info(1111111);
+						//console.log($(li.id));
+						li.innerHTML = user__Data[k].name + "<span>(" + " " + $.renderElement.renderitemNum($(li.id)) + " " + ")</span>" + aStr;
+						
+                        //findSpan($(li.id));
 						//console.log(currentCategory_item);
 						// if (hasClass(li.parentNode.previousSibling, 'active')) {
 						// 	removeClass(li.parentNode.previousSibling, 'active');
@@ -1172,43 +1200,111 @@ $.renderElement = {
 				}
 			}
 		}
-		var current = JSON.parse(localStorage.getItem("current"));
+		findAllTask();
+		currentCategory = '';
+		currentCategory_item = '';
+		currentTaskName = '';
+		//var current = JSON.parse(localStorage.getItem("current"));
 		//console.log($(current[0]))
-		sortTasks($(current[1]));
-        if (current.length === 3) {
-            addClass($(current[1]), "active");
-            addClass($(current[2]), "active");
-        }
+		//sortTasks($(current[1]));
+		//		switch (current.length) {
+		//			case '1':
+		//
+		//				break;
+		//			case '2':
+		//				addClass($(current[1]), 'active');
+		//                currentCategory_item = $(current[1]);
+		//		}
 	},
-	renderTask: function () {
-
-	},
-    renderClassName: function () {
-        var current = JSON.parse(localStorage.getItem("currentActive"));
-        for (var i = 0,j = current.length; i < j; i++) {
-            addClass(current[i], 'active');
+	renderActive: function () {
+        var currentActive = JSON.parse(localStorage.getItem('currentActive'));
+        if (currentActive[0].length) {
+            var p = $(currentActive[0][0]).getElementsByTagName('p');
+            addClass(p[0], 'active')
         }
-        
-    }
-
+        if (currentActive[1].length) {
+            currentCategory_item = $(currentActive[1][0]);
+            //console.log(currentCategory_item);
+            addClass(currentCategory_item, 'active');
+			sortTasks(currentCategory_item);
+            //findSpan(currentCategory_item);
+			if (currentActive[2].length) {
+				currentTaskName = $(currentActive[2][0]);
+				addClass(currentTaskName, 'active');
+				$.data.showContent();
+			}
+        }
+		findAllTask();
+	},
+    renderitemNum: function (itemElement) {
+        itemLength = getItemPos(itemElement);
+		categoryLength = getCategoryPos(itemElement.parentNode.parentNode);
+		currentCategory = itemElement.parentNode.parentNode;
+		var user_Data = $.data.getDefaultStorage();
+		if (currentCategory == defaultCategory) {
+			var user__Data = user_Data.defaultCategory.subCategories[itemLength].tasks;
+		} else {
+			var user__Data = user_Data.categories[categoryLength].subCategories[itemLength].tasks;
+		}
+		return user__Data.length;
+    },
+	renderPNum: function (pElement) {
+		categoryLength = getCategoryPos(pElement);
+		var userData = $.data.getDefaultStorage();
+		var count = 0;
+		//console.info(pElement);
+		if (pElement == defaultCategory) {
+			var user_Data = userData.defaultCategory.subCategories;
+			// if (user_Data.length) {
+			// 	for (var i = 0; i <  user_Data.length; i++) {
+			// 		count = count + user_Data[i].tasks.length;
+			// 		//console.info(count);
+			// 	}
+			// 	return count;
+			// } else {
+			// 	return 0;
+			// }
+		} else {
+			 var user_Data = userData.categories[categoryLength].subCategories;
+			// if (user_Data.length) {
+			// 	for (var i = 0; i <  user_Data.length; i++) {
+			// 		count = count + user_Data[i].tasks.length;
+			// 		//console.info(count);
+			// 	}
+			// 	return count;
+			// } else {
+			// 	return 0;
+			// }
+		}
+		//console.log(user_Data.length);
+		if (user_Data.length) {
+			for (var i = 0; i <  user_Data.length; i++) {
+				count = count + user_Data[i].tasks.length;
+				//console.info(count);
+			}
+			return count;
+		} else {
+			return 0;
+		}
+	}
 };
 
 // save category id to localStorage
-var categoryIddArr = [[],[],[]];
-function setLiLocalStorage(id) {
-	categoryIddArr[0].push(id);
-	localStorage.setItem("CatrgoryId",JSON.stringify(categoryIddArr));
-}
+var categoryIddArr = [];
+//function setLiLocalStorage(id) {
+//	categoryIddArr[0].push(id);
+//	localStorage.setItem("CatrgoryId",JSON.stringify(categoryIddArr));
+//}
 
 function setDivLocalStorage(id) {
-	categoryIddArr[1].push(id);
+	categoryIddArr.push(id);
 	localStorage.setItem("CatrgoryId",JSON.stringify(categoryIddArr));
 }
 
-function setnotDefaultLiLocalStorage(id) {
-	categoryIddArr[2].push(id);
-	localStorage.setItem("CatrgoryId",JSON.stringify(categoryIddArr));
-}
+//function setnotDefaultLiLocalStorage(id) {
+//	categoryIddArr[2].push(id);
+//	localStorage.setItem("CatrgoryId",JSON.stringify(categoryIddArr));
+//}
 
 // save current status
 // ------------------------------not done 
@@ -1217,13 +1313,31 @@ function setCurrent(currentCategory, currentCategory_item, currentTaskName) {
 		b = currentCategory_item,
 		c = currentTaskName;
 	var arr = [a, b, c];
-    var actives;
-    if (!document.getElementsByClassName('active').length) {
-        actives = document.getElementsByClassName('active');
+    if (document.querySelectorAll('.active').length) {
+        var activesArr = [[], [], []];
+        var actives = document.querySelectorAll('.active');
+       	console.log(actives);
         for (var i = 0; i < actives.length; i++) {
-            console.log(actives[i]);
+            //console.log(actives[i]);
+//            if (actives[i].tagName === "P") {
+//                activesArr[0].push(actives[i].parentNode.id);
+//            }
+//            if (actives[i].tagName)
+//            activesArr[1].push(actives[i].id);
+            switch (actives[i].tagName) {
+				case "P":
+                    activesArr[0].push(actives[i].parentNode.id);
+                    break;
+				case "LI":
+                    activesArr[1].push(actives[i].id);
+                    break;
+				case "DD":
+                    activesArr[2].push(actives[i].id);
+                    break;
+            }
         }
-        localStorage.setItem("currentActive", JSON.stringify(actives));
+//        console.log(actives);
+        localStorage.setItem("currentActive", JSON.stringify(activesArr));
     }
 	localStorage.setItem("current", JSON.stringify(arr));
 }
