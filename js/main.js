@@ -31,7 +31,7 @@ $.delegate($('category'), 'p', 'click', function (event) {
 		addClass(that, 'active');
 		currentCategory = that.parentNode;
 	}
-	setCurrent(currentCategory, currentCategory_item,currentTaskName);
+	setCurrent(currentCategory.id);
 });
 ////item
 $.delegate($('category'), 'li', 'click', function () {
@@ -58,21 +58,21 @@ $.delegate($('category'), 'li', 'click', function () {
 		sortTasks(currentCategory_item);
 	}
 	//$.cookieUtil.set('flagShowTask', true);
-	setCurrent(currentCategory, currentCategory_item, currentTaskName);
+	setCurrent(currentCategory.id, currentCategory_item.id);
 });
 //subnav——————
 $.delegate($('task'), 'dd', 'click', function () {
 	var that = this;
-	if (hasClass(that, 'active')) {
-		removeClass(that, 'active');
-		currentTaskName = '';
-	} else {
+	//if (hasClass(that, 'active')) {
+	//	removeClass(that, 'active');
+	//	currentTaskName = '';
+	//} else {
 		removeAllClass('dd', 'active');
 		addClass(that, 'active');
 		currentTaskName = that;
 		$.data.showContent();
-	}
-	setCurrent(currentCategory, currentCategory_item, currentTaskName);
+	//}
+	setCurrent(currentCategory.id, currentCategory_item.id, currentTaskName.id);
 });
 
 //delete element——————————————————————————————————————————
@@ -190,6 +190,7 @@ if (!localStorage.getItem('flag')) {
 	$.data.loadDefaultData();
 } else {
 	$.renderElement.renderCategory();
+    //$.renderElement.renderClassName();
 }
 localStorage.setItem("flag","loadDone");
 // $.cookieUtil.set("flag",true);

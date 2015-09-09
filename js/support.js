@@ -399,6 +399,8 @@ $.newContent = {
 			}
 			addClass(li, 'active')
 		}
+		//console.log(currentCategory_item);
+		setCurrent(currentCategory.id, currentCategory_item.id);
 		//findSpan(currentCategory_item);
 		findAllTask();
 	},
@@ -427,6 +429,8 @@ $.newContent = {
 		}
 		saveTaskValue(currentCategory_item, value);
 		sortTasks(currentCategory_item);
+        addClass($(JSON.parse(localStorage.getItem("cuurentTaskID"))), "active");
+        setCurrent(currentCategory.id, currentCategory_item.id, JSON.parse(localStorage.getItem("cuurentTaskID")));
 		$('subtitle').value = value;
         $('taskname').value = $.date.dateYMD();
         $('con-text').value = '';
@@ -508,6 +512,7 @@ function saveTaskValue(currentCategory_item, value) {
 		itemTasks[itemTasks.length - 1].contents = '';
 		itemTasks[itemTasks.length - 1].isFinished = false;
 	}
+    localStorage.setItem("cuurentTaskID",JSON.stringify(itemTasks[itemTasks.length - 1].createtime));
 	$.data.setDefaultStorage(userData);
 }
 
@@ -1167,11 +1172,24 @@ $.renderElement = {
 				}
 			}
 		}
-		sortTasks(JSON.parse(localStorage.getItem("current"))[1]);
+		var current = JSON.parse(localStorage.getItem("current"));
+		//console.log($(current[0]))
+		sortTasks($(current[1]));
+        if (current.length === 3) {
+            addClass($(current[1]), "active");
+            addClass($(current[2]), "active");
+        }
 	},
 	renderTask: function () {
 
-	}
+	},
+    renderClassName: function () {
+        var current = JSON.parse(localStorage.getItem("currentActive"));
+        for (var i = 0,j = current.length; i < j; i++) {
+            addClass(current[i], 'active');
+        }
+        
+    }
 
 };
 
@@ -1195,9 +1213,17 @@ function setnotDefaultLiLocalStorage(id) {
 // save current status
 // ------------------------------not done 
 function setCurrent(currentCategory, currentCategory_item, currentTaskName) {
-	var a = currentCategory.getAttribute('id'),
-		b = currentCategory_item.getAttribute('id'),
-		c = currentTaskName.getAttribute('id');
+	var a = currentCategory,
+		b = currentCategory_item,
+		c = currentTaskName;
 	var arr = [a, b, c];
+    var actives;
+    if (!document.getElementsByClassName('active').length) {
+        actives = document.getElementsByClassName('active');
+        for (var i = 0; i < actives.length; i++) {
+            console.log(actives[i]);
+        }
+        localStorage.setItem("currentActive", JSON.stringify(actives));
+    }
 	localStorage.setItem("current", JSON.stringify(arr));
 }
