@@ -1176,7 +1176,8 @@ $.renderElement = {
 				//item 
 				if (user_Data[i].subCategories.length) {
 					var user__Data = user_Data[i].subCategories;
-					var divliId = idLocalStorage[2];
+					//var divliId = idLocalStorage[2];
+					console.log(11111);
 					for (var k = 0; k < user__Data.length; k++) {
 						var curCate_id = divID[i];
 						var uls = $(curCate_id).getElementsByTagName('ul');
@@ -1309,10 +1310,10 @@ function setDivLocalStorage(id) {
 // save current status
 // ------------------------------not done 
 function setCurrent(currentCategory, currentCategory_item, currentTaskName) {
-	var a = currentCategory,
-		b = currentCategory_item,
-		c = currentTaskName;
-	var arr = [a, b, c];
+	// var a = currentCategory,
+	// 	b = currentCategory_item,
+	// 	c = currentTaskName;
+	// var arr = [a, b, c];
     if (document.querySelectorAll('.active').length) {
         var activesArr = [[], [], []];
         var actives = document.querySelectorAll('.active');
@@ -1339,5 +1340,5 @@ function setCurrent(currentCategory, currentCategory_item, currentTaskName) {
 //        console.log(actives);
         localStorage.setItem("currentActive", JSON.stringify(activesArr));
     }
-	localStorage.setItem("current", JSON.stringify(arr));
+	//localStorage.setItem("current", JSON.stringify(arr));
 }

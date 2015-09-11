@@ -149,12 +149,18 @@ $.addEvent($('save'), 'click', function () {
 	save(false);
 	sortTasks(currentCategory_item);
 	removeAllClass('dd', 'active');
+	//addClass(currentTaskName, 'active');
+	var currentActive = JSON.parse(localStorage.getItem('currentActive'));
+	currentTaskName = $(currentActive[2][0]);
 	addClass(currentTaskName, 'active');
 });
 
 $.addEvent($('finish'), 'click', function() {
 	save(true);
 	sortTasks(currentCategory_item);
+	var currentActive = JSON.parse(localStorage.getItem('currentActive'));
+	currentTaskName = $(currentActive[2][0]);
+	addClass(currentTaskName, 'active');
 })
 
 // show task is finished
@@ -170,6 +176,7 @@ $.addEvent($('all'), 'click', function () {
 $.addEvent($('unfinished'), 'click', function () {
 	removeAllClass('button', 'btn-active');
 	addClass(this, 'btn-active');
+	currentTaskName = '';
 	if (!currentCategory_item) {
 		return;
 	}
@@ -182,6 +189,7 @@ $.addEvent($('unfinished'), 'click', function () {
 $.addEvent($('finished'), 'click', function () {
 	removeAllClass('button', 'btn-active');
 	addClass(this, 'btn-active');
+	currentTaskName = '';
 	if (!currentCategory_item) {
 		return;
 	}

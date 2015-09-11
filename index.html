@@ -4,14 +4,14 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>IFE Manage</title>
-	<link rel="stylesheet" href="css/reset.css">
-	<link rel="stylesheet" href="css/main.css">
+	<link rel="stylesheet" href="css/normalize.css">
+	<link rel="stylesheet" href="css/new.css">
 </head>
 <body>
-	<header>GTD Tools</header>
+	<header><h1>GTD Tools</h1></header>
 	<div class="nav" id="nav">
 		<p class="alltask">所有任务<span id="allTask">( 0 )</span></p>
-		<div class="category" id="category">
+		<hgroup class="category" id="category">
 			<p>分类列表</p>
 			<!-- <div class="category-list" id="category-default">	
 				<p class="category-p active">默认分类<span>(10)</span></p>
@@ -25,17 +25,17 @@
 					<li>task1<span>(5)</span><a href="#">删除</a></li>
 				</ul>
 			</div> -->
-		</div>
+		</hgroup>
 		<div class="new" id="newCategory">
 			<p>新增分类</p>
 		</div>
 	</div>
 	<div class="subnav" id="subnav">
-		<div class="top" id="top">
+		<nav class="top" id="top">
 			<button class="btn-active" id="all">所有</button>
 			<button id="unfinished">未完成</button>
-			<button id="finished">以完成</button>
-		</div>
+			<button id="finished">已完成</button>
+		</nav>
 		<div class="task" id="task">
 			<!-- <div class="task-item" id="task-item-1">
 				<dl>
@@ -50,12 +50,12 @@
 		</div>
 	</div>
 	<div class="main">
-		<div class="title" id="title">
+		<nav class="title" id="title">
 			<input type="text" disabled="true" id="subtitle">
 			<button id="finish">完成</button>
 			<button id="save">保存</button>
 			<button id="edit">编辑</button>
-		</div>
+		</nav>
 		<div class="date" id="date">
 			<label for="taskname">任务日期:<input type="text" name="taskname" id="taskname" disabled="true"></label>
 			<span id="dateFormate">日期格式为YYYY-MM-DD</span>
