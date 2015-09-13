@@ -145,6 +145,9 @@ header h1 {
   outline: none;
   font-size: 14px;
 }
+.subnav .top button:hover {
+  border: 2px solid #b979b1;
+}
 .subnav .top .btn-active {
   border: 2px solid #b979b1;
   border-radius: 5%;
